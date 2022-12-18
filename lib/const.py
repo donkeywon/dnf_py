@@ -1,1 +1,0 @@
-STRIP_CHARS = " \r\n\t`"
