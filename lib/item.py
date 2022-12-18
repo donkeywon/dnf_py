@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 from lib.tag import tag
 
 class item:
-    tag_arr: list[tag]
-    tag_dict: dict
-    filepath: str
-    def __init__(self, filepath):
-        self.filepath = filepath
-        self.tag_arr = []
-        self.tag_dict = {}
+    __tag_arr: list[tag]
+    __tag_dict: dict[str, tag]
+    __filepath: str
+    def __init__(self, filepath: str):
+        self.__filepath = filepath
+        self.__tag_arr = []
+        self.__tag_dict = {}
         with open(filepath, mode='r', encoding='utf-8') as f:
             content = f.read()
-            content_arr = []
+            content_arr: list[str] = []
             value = ''
             i = 0
             while i < len(content):
@@ -41,27 +43,50 @@ class item:
 
             tags = self._parse_content(content_arr)
             for t in tags:
-                self.tag_arr.append(t)
-                self.tag_dict[t.name] = t
-    def to_string(self):
+                self.__tag_arr.append(t)
+                self.__tag_dict[t.get_name()] = t
+            if self.to_string() != content:
+                raise Exception("content is not equal to to_string")
+    def to_string(self) -> str:
         out = "#PVF_File\n\n"
-        for i in range(len(self.tag_arr)):
-            t = self.tag_arr[i]
+        for i in range(len(self.get_tag_arr())):
+            t = self.get_tag_arr()[i]
             out += t.to_string()
-            if i == len(self.tag_arr) - 1:
+            if i == len(self.get_tag_arr()) - 1:
                 out += '\n'
             else:
                 out += '\n\n'
         return out
+    def get_filepath(self) -> str:
+        return self.__filepath
+    def get_tag_arr(self) -> list[tag]:
+        return self.__tag_arr
+    def get_tag_dict(self) -> dict[str, tag]:
+        return self.__tag_dict
+    def get_tag(self, tag_name: str) -> tag:
+        return self.get_tag_dict()[tag_name]
+    def add_tag(self, t: tag):
+        self.get_tag_arr().append(t)
+        self.get_tag_dict()[t.get_name()] = t
+    def has_tag(self, tag_name: str) -> bool:
+        return tag_name in self.get_tag_dict()
+    def write(self, new_path:str =''):
+        path = self.get_filepath()
+        if new_path != '':
+            path = new_path
+        f = open(path, mode='w', encoding='utf-8')
+        f.write(self.to_string())
+        f.close()
     @staticmethod
-    def _parse_content(content_arr):
-        tags = []
+    def _parse_content(content_arr: list[str]) -> list[tag]:
+        tags: list[tag] = []
         i = 0
         while i < len(content_arr):
             if len(content_arr[i]) > 1 and content_arr[i][0] == '[' and content_arr[i][-1] == ']':
                 tag_name = content_arr[i][1:-1]
                 has_close_tag = False
                 has_sub_tag = False
+                j = i + 1
                 for j in range(i+1, len(content_arr)):
                     if content_arr[j] == '[/' + tag_name + ']':
                         has_close_tag = True
@@ -83,7 +108,7 @@ class item:
             i += 1
         return tags
     @staticmethod
-    def _parse_tag(content_arr, tag_name, has_close_tag, has_sub_tag):
+    def _parse_tag(content_arr: list[str], tag_name: str, has_close_tag: bool, has_sub_tag: bool) -> tag:
         if len(content_arr) == 1 \
         or has_close_tag and content_arr[1].find('[/') == 0 \
         or not has_close_tag and content_arr[1].find('[') == 0:

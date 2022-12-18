@@ -1,11 +1,15 @@
+import os
+
 class lst:
-    item_dict: dict[int, str]
-    item_dict_revert: dict[str, int]
-    filepath: str
-    def __init__(self, filepath):
-        self.filepath = filepath
-        self.item_dict = {}
-        self.item_dict_revert = {}
+    __item_dict: dict[int, str]
+    __item_dict_revert: dict[str, int]
+    __filepath: str
+    def __init__(self, filepath: str):
+        self.__filepath = filepath
+        self.__item_dict = {}
+        self.__item_dict_revert = {}
+        if not os.path.exists(filepath):
+            raise Exception("lst file not exists, filepath: %s" % filepath)
         with open(filepath, mode='r', encoding='utf-8') as f:
             content = f.read()
             item_id, item_path = '', ''
@@ -32,24 +36,37 @@ class lst:
                 if id_done and path_done:
                     item_path = item_path.lower()
                     item_id = int(item_id)
-                    if item_id in self.item_dict:
+                    if item_id in self.__item_dict:
                         raise Exception("重复id：" + item_id + ", lst: " + filepath)
-                    if item_path in self.item_dict_revert:
+                    if item_path in self.__item_dict_revert:
                         print("重复value：" + item_path + ", lst: " + filepath)
-                    self.item_dict[item_id] = item_path
-                    self.item_dict_revert[item_path] = item_id
+                    self.__item_dict[item_id] = item_path
+                    self.__item_dict_revert[item_path] = item_id
                     id_done, path_done = False, False
                     item_id, item_path = '', ''
                 i += 1
-    def get_value_by_id(self, id):
-        return self.item_dict[id]
-    def get_id_by_value(self, value):
-        return self.item_dict_revert[value]
-    def size(self):
-        return len(self.item_dict)
-    def to_string(self):
+    def get_value_by_id(self, id: int) -> str:
+        return self.get_item_dict()[id]
+    def get_id_by_value(self, value: str) -> int:
+        return self.get_item_dict_revert()[value]
+    def get_item_dict(self) -> dict[int, str]:
+        return self.__item_dict
+    def get_item_dict_revert(self) -> dict[str, int]:
+        return self.__item_dict_revert
+    def get_filepath(self) -> str:
+        return self.__filepath
+    def size(self) -> int:
+        return len(self.get_item_dict())
+    def write(self, new_path: str = ''):
+        path = self.get_filepath()
+        if new_path != '':
+            path = new_path
+        f = open(path, mode='w', encoding='utf-8')
+        f.write(self.to_string())
+        f.close()
+    def to_string(self) -> str:
         out = "#PVF_File\n\n"
-        for k in sorted(self.item_dict.keys()):
+        for k in sorted(self.get_item_dict().keys()):
             out += str(k) + "\n"
-            out += "`%s`\n" % self.item_dict[k]
+            out += "`%s`\n" % self.get_item_dict()[k]
         return out
