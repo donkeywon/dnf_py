@@ -33,33 +33,46 @@ class pvf:
     __path: str
 
     __type_lst: dict[str, lst]
-    __type_dict: dict[str, dict[int, item]]
+    __type_item_id_dict: dict[str, dict[int, item]]
+    __type_item_path_dict: dict[str, dict[str, item]]
 
-    def __init__(self, path: str, init_type: list[str] = TYPES):
+    def __init__(self, path: str, init_type: list[str] = TYPES, skip_item_not_exists: bool = False, skip_item_init_fail: bool = False):
         self.__path = path
         self.__type_lst = {}
-        self.__type_dict = {}
+        self.__type_item_id_dict = {}
+        self.__type_item_path_dict = {}
         for typ in init_type:
             dir_path = os.path.join(self.__path, typ)
             if not os.path.exists(dir_path):
-                return
+                continue
             lst_path = os.path.join(dir_path, typ + ".lst")
             l = lst(lst_path)
             self.__type_lst[typ] = l
-            typ_dict = {}
+            typ_item_id_dict = {}
+            typ_item_path_dict = {}
             for id, pvf_path in l.get_item_dict().items():
                 item_path = os.path.join(self.__path, typ, pvf_path)
                 if not os.path.exists(item_path):
-                    raise Exception("item not exists, typ=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path))
+                    if skip_item_not_exists:
+                        continue
+                    else:
+                        raise Exception("item not exists, typ=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path))
                 try:
-                    typ_dict[id] = item(os.path.join(self.__path, typ, pvf_path))
+                    it = item(os.path.join(self.__path, typ, pvf_path))
+                    typ_item_id_dict[id] = it
+                    typ_item_path_dict[pvf_path] = it
                 except Exception as e:
-                    print("init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
-            self.__type_dict[typ] = typ_dict
+                    if skip_item_init_fail:
+                        print("init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
+                    else:
+                        raise Exception("init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
+            self.__type_item_id_dict[typ] = typ_item_id_dict
+            self.__type_item_path_dict[typ] = typ_item_path_dict
         print("pvf init done")
     def get_path(self) -> str:
         return self.__path
     def get_type_lst(self) -> dict[str, lst]:
         return self.__type_lst
     def get_type_dict(self) -> dict[str, dict[int, item]]:
-        return self.__type_dict
+        return self.__type_item_id_dict
+# TODO walk dir

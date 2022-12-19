@@ -45,8 +45,6 @@ class item:
             for t in tags:
                 self.__tag_arr.append(t)
                 self.__tag_dict[t.get_name()] = t
-            if self.to_string() != content:
-                raise Exception("content is not equal to to_string")
     def to_string(self) -> str:
         out = "#PVF_File\n\n"
         for i in range(len(self.get_tag_arr())):
