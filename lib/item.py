@@ -6,7 +6,7 @@ class item:
     __tag_arr: list[tag]
     __tag_dict: dict[str, tag]
     __filepath: str
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str, merge_duplicate_tag: bool = False):
         self.__filepath = filepath
         self.__tag_arr = []
         self.__tag_dict = {}
@@ -43,6 +43,10 @@ class item:
 
             tags = self._parse_content(content_arr)
             for t in tags:
+                if t.get_name() in self.__tag_dict:
+                    print("重复的tag, filepath: %s, tag: %s" % (filepath, t.get_name()))
+                    if merge_duplicate_tag:
+                        continue
                 self.__tag_arr.append(t)
                 self.__tag_dict[t.get_name()] = t
     def to_string(self) -> str:

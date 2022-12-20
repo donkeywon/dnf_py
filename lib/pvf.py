@@ -36,7 +36,7 @@ class pvf:
     __type_item_id_dict: dict[str, dict[int, item]]
     __type_item_path_dict: dict[str, dict[str, item]]
 
-    def __init__(self, path: str, init_type: list[str] = TYPES, skip_item_not_exists: bool = False, skip_item_init_fail: bool = False):
+    def __init__(self, path: str, init_type: list[str] = TYPES, skip_item_not_exists: bool = False, skip_item_init_fail: bool = False, merge_duplicate_tag: bool = False):
         self.__path = path
         self.__type_lst = {}
         self.__type_item_id_dict = {}
@@ -58,7 +58,7 @@ class pvf:
                     else:
                         raise Exception("item not exists, typ=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path))
                 try:
-                    it = item(os.path.join(self.__path, typ, pvf_path))
+                    it = item(os.path.join(self.__path, typ, pvf_path), merge_duplicate_tag)
                     typ_item_id_dict[id] = it
                     typ_item_path_dict[pvf_path] = it
                 except Exception as e:
@@ -75,4 +75,17 @@ class pvf:
         return self.__type_lst
     def get_type_dict(self) -> dict[str, dict[int, item]]:
         return self.__type_item_id_dict
-# TODO walk dir
+    @staticmethod
+    def read_dir(path: str, file_ext: str, merge_duplicate_tag: bool = False) -> dict[str, item]:
+        if not os.path.exists(path):
+            return {}
+        res: dict[str, item] = {}
+        for parent, _, filenames in os.walk(path):
+            for filename in filenames:
+                if not filename.endswith(file_ext):
+                    continue
+                file_path = os.path.join(parent, filename)
+
+                i = item(file_path, merge_duplicate_tag)
+                res[file_path] = i
+        return res
