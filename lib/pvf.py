@@ -29,6 +29,7 @@ TYPES = [
     STK
 ]
 
+
 class pvf:
     __path: str
 
@@ -56,25 +57,33 @@ class pvf:
                     if skip_item_not_exists:
                         continue
                     else:
-                        raise Exception("item not exists, typ=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path))
+                        raise Exception(
+                            "item not exists, typ=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path))
                 try:
-                    it = item(os.path.join(self.__path, typ, pvf_path), merge_duplicate_tag)
+                    it = item(os.path.join(self.__path, typ,
+                              pvf_path), merge_duplicate_tag)
                     typ_item_id_dict[id] = it
                     typ_item_path_dict[pvf_path] = it
                 except Exception as e:
                     if skip_item_init_fail:
-                        print("init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
+                        print("init item fail, type=%s, id=%d, pvf_path=%s" %
+                              (typ, id, pvf_path), e)
                     else:
-                        raise Exception("init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
+                        raise Exception(
+                            "init item fail, type=%s, id=%d, pvf_path=%s" % (typ, id, pvf_path), e)
             self.__type_item_id_dict[typ] = typ_item_id_dict
             self.__type_item_path_dict[typ] = typ_item_path_dict
         print("pvf init done")
+
     def get_path(self) -> str:
         return self.__path
+
     def get_type_lst(self) -> dict[str, lst]:
         return self.__type_lst
+
     def get_type_dict(self) -> dict[str, dict[int, item]]:
         return self.__type_item_id_dict
+
     @staticmethod
     def read_dir(path: str, file_ext: str, merge_duplicate_tag: bool = False) -> dict[str, item]:
         if not os.path.exists(path):

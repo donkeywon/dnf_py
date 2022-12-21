@@ -1,9 +1,11 @@
 import os
 
+
 class lst:
     __item_dict: dict[int, str]
     __item_dict_revert: dict[str, int]
     __filepath: str
+
     def __init__(self, filepath: str):
         self.__filepath = filepath
         self.__item_dict = {}
@@ -37,7 +39,8 @@ class lst:
                     item_path = item_path.lower()
                     item_id = int(item_id)
                     if item_id in self.__item_dict:
-                        raise Exception("重复id：" + item_id + ", lst: " + filepath)
+                        raise Exception("重复id：" + item_id +
+                                        ", lst: " + filepath)
                     if item_path in self.__item_dict_revert:
                         print("重复value：" + item_path + ", lst: " + filepath)
                     self.__item_dict[item_id] = item_path
@@ -45,18 +48,25 @@ class lst:
                     id_done, path_done = False, False
                     item_id, item_path = '', ''
                 i += 1
+
     def get_value_by_id(self, id: int) -> str:
         return self.get_item_dict()[id]
+
     def get_id_by_value(self, value: str) -> int:
         return self.get_item_dict_revert()[value]
+
     def get_item_dict(self) -> dict[int, str]:
         return self.__item_dict
+
     def get_item_dict_revert(self) -> dict[str, int]:
         return self.__item_dict_revert
+
     def get_filepath(self) -> str:
         return self.__filepath
+
     def size(self) -> int:
         return len(self.get_item_dict())
+
     def write(self, new_path: str = ''):
         path = self.get_filepath()
         if new_path != '':
@@ -64,6 +74,7 @@ class lst:
         f = open(path, mode='w', encoding='utf-8')
         f.write(self.to_string())
         f.close()
+
     def to_string(self) -> str:
         out = "#PVF_File\n\n"
         for k in sorted(self.get_item_dict().keys()):
