@@ -7,7 +7,6 @@ class tag:
     __has_sub_tag: bool
     __has_close_tag: bool
     __sub_tags: list[tag]
-    __sub_tag_dict: dict[str, tag]
 
     def __init__(self, name: str, value: str, has_close_tag: bool = False):
         self.__name = name
@@ -15,12 +14,10 @@ class tag:
         self.__has_sub_tag = False
         self.__has_close_tag = has_close_tag
         self.__sub_tags = []
-        self.__sub_tag_dict = {}
 
     def add_sub_tag(self, t: tag):
         self.__has_sub_tag = True
         self.get_sub_tags().append(t)
-        self.get_sub_tags_dict()[t.get_name()] = t
 
     def get_name(self) -> str:
         return self.__name
@@ -36,12 +33,6 @@ class tag:
 
     def get_sub_tags(self) -> list[tag]:
         return self.__sub_tags
-
-    def get_sub_tags_dict(self) -> dict[str, tag]:
-        return self.__sub_tag_dict
-
-    def get_sub_tag(self, tag_name: str) -> tag:
-        return self.get_sub_tags_dict()[tag_name]
 
     def to_string(self, depth: int = 0) -> str:
         depth_prefix = ''

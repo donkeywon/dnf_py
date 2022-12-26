@@ -85,7 +85,7 @@ class pvf:
         return self.__type_item_id_dict
 
     @staticmethod
-    def read_dir(path: str, file_ext: str, merge_duplicate_tag: bool = False) -> dict[str, item]:
+    def read_dir(path: str, file_ext: str, warn_duplicate_tag: bool = True) -> dict[str, item]:
         if not os.path.exists(path):
             return {}
         res: dict[str, item] = {}
@@ -95,6 +95,6 @@ class pvf:
                     continue
                 file_path = os.path.join(parent, filename)
 
-                i = item(file_path, merge_duplicate_tag)
+                i = item(file_path, warn_duplicate_tag)
                 res[file_path] = i
         return res
