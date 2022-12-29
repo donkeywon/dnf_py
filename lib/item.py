@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from lib.tag import tag
 
 EXT_AIC = "aic"
@@ -22,12 +24,14 @@ class item:
     __tag_arr: list[tag]
     __tag_dict: dict[str, list[tag]]
     __filepath: str
+    __filename: str
     __ext: str
     __has_duplicate_tag: bool
 
     def __init__(self, filepath: str, warn_duplicate_tag: bool = True):
         self.__filepath = filepath
         self.__ext = filepath.split(".")[-1]
+        self.__filename = os.path.split(filepath)[1]
         self.__tag_arr = []
         self.__tag_dict = {}
         self.__has_duplicate_tag = False
@@ -143,6 +147,9 @@ class item:
     def get_filepath(self) -> str:
         return self.__filepath
 
+    def get_filename(self) -> str:
+        return self.__filename
+
     def get_tag_arr(self) -> list[tag]:
         return self.__tag_arr
 
@@ -152,11 +159,19 @@ class item:
     def get_tag(self, tag_name: str) -> list[tag]:
         return self.get_tag_dict()[tag_name]
 
-    def add_tag(self, t: tag):
-        self.get_tag_arr().append(t)
+    def add_tag(self, t: tag, index: int = -1):
+        if index == -1:
+            index = len(self.get_tag_arr())
+        self.get_tag_arr().insert(index, t)
         if t.get_name() not in self.get_tag_dict():
             self.get_tag_dict()[t.get_name()] = []
         self.get_tag_dict()[t.get_name()].append(t)
+
+    def add_tag_after(self, t: tag, after_tag: str):
+        for i in range(0, len(self.get_tag_arr())):
+            if self.get_tag_arr()[i].get_name() == after_tag:
+                self.add_tag(t, i+1)
+                return
 
     def has_tag(self, tag_name: str) -> bool:
         return tag_name in self.get_tag_dict()

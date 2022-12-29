@@ -39,7 +39,7 @@ class lst:
                     item_path = item_path.lower()
                     item_id = int(item_id)
                     if item_id in self.__item_dict:
-                        raise Exception("重复id：" + item_id +
+                        raise Exception("重复id：" + str(item_id) +
                                         ", lst: " + filepath)
                     if item_path in self.__item_dict_revert:
                         print("重复value：" + item_path + ", lst: " + filepath)
@@ -67,13 +67,13 @@ class lst:
     def size(self) -> int:
         return len(self.get_item_dict())
 
-    def write(self, new_path: str = ''):
-        path = self.get_filepath()
-        if new_path != '':
-            path = new_path
-        f = open(path, mode='w', encoding='utf-8')
+    def write(self, new_path: str):
+        f = open(new_path, mode='w', encoding='utf-8')
         f.write(self.to_string())
         f.close()
+
+    def overwrite(self):
+        self.write(self.get_filepath())
 
     def to_string(self) -> str:
         out = "#PVF_File\n\n"
