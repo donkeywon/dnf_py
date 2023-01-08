@@ -19,23 +19,27 @@ EXT_STK = "stk"
 MERGE_TAG_KEEP_FIRST = 0
 MERGE_TAG_KEEP_LAST = 1
 
+PVF_ITEM_START = "#PVF_File\n\n"
+
 
 class item:
     __tag_arr: list[tag]
     __tag_dict: dict[str, list[tag]]
+    __pvf_dir_path: str
     __filepath: str
     __filename: str
     __ext: str
     __has_duplicate_tag: bool
 
-    def __init__(self, filepath: str, warn_duplicate_tag: bool = True):
-        self.__filepath = filepath
+    def __init__(self, pvf_dir_path: str, filepath: str, warn_duplicate_tag: bool = True):
+        self.__pvf_dir_path = pvf_dir_path
         self.__ext = filepath.split(".")[-1]
         self.__filename = os.path.split(filepath)[1]
+        self.__filepath = filepath
         self.__tag_arr = []
         self.__tag_dict = {}
         self.__has_duplicate_tag = False
-        with open(filepath, mode='r', encoding='utf-8') as f:
+        with open(self.__filepath, mode='r', encoding='utf-8') as f:
             content = f.read()
             content_arr: list[str] = []
             value = ''
@@ -47,7 +51,7 @@ class item:
                     value = ''
                     for j in range(i, len(content)):
                         value += content[j]
-                        if content[j] == ']' and j < len(content) - 1 and content[j+1] != '`':
+                        if content[j] == ']':
                             content_arr.append(value)
                             value = ''
                             i = j
@@ -72,7 +76,7 @@ class item:
                     self.__has_duplicate_tag = True
                     if warn_duplicate_tag:
                         print("重复的tag: %s, filepath: %s" %
-                              (t.get_name(), filepath))
+                              (t.get_name(), self.__filepath))
                 self.__tag_arr.append(t)
                 if t.get_name() not in self.__tag_dict:
                     self.__tag_dict[t.get_name()] = []
@@ -134,7 +138,7 @@ class item:
             self.get_tag_arr().remove(t)
 
     def to_string(self) -> str:
-        out = "#PVF_File\n\n"
+        out = PVF_ITEM_START
         for i in range(len(self.get_tag_arr())):
             t = self.get_tag_arr()[i]
             out += t.to_string()
@@ -147,6 +151,12 @@ class item:
     def get_filepath(self) -> str:
         return self.__filepath
 
+    def get_pvf_dir_path(self) -> str:
+        return self.__pvf_dir_path
+
+    def get_internal_path(self) -> str:
+        return self.__filepath.strip(self.__pvf_dir_path).replace("\\", "/").lower().lstrip("/")
+
     def get_filename(self) -> str:
         return self.__filename
 
@@ -158,6 +168,9 @@ class item:
 
     def get_tag(self, tag_name: str) -> list[tag]:
         return self.get_tag_dict()[tag_name]
+
+    def get_single_tag(self, tag_name: str) -> tag:
+        return self.get_tag_dict()[tag_name][0]
 
     def add_tag(self, t: tag, index: int = -1):
         if index == -1:

@@ -2,8 +2,8 @@ import os
 
 
 class lst:
-    __item_dict: dict[int, str]
-    __item_dict_revert: dict[str, int]
+    __item_dict: dict[str, str]
+    __item_dict_revert: dict[str, str]
     __filepath: str
 
     def __init__(self, filepath: str):
@@ -37,11 +37,10 @@ class lst:
 
                 if id_done and path_done:
                     item_path = item_path.lower()
-                    item_id = int(item_id)
-                    if item_id in self.__item_dict:
-                        raise Exception("重复id：" + str(item_id) +
+                    if item_id in self.__item_dict and item_path not in self.__item_dict_revert:
+                        raise Exception("重复id：" + item_id +
                                         ", lst: " + filepath)
-                    if item_path in self.__item_dict_revert:
+                    if item_path in self.__item_dict_revert and item_id not in self.__item_dict:
                         print("重复value：" + item_path + ", lst: " + filepath)
                     self.__item_dict[item_id] = item_path
                     self.__item_dict_revert[item_path] = item_id
@@ -49,20 +48,23 @@ class lst:
                     item_id, item_path = '', ''
                 i += 1
 
-    def get_value_by_id(self, id: int) -> str:
+    def get_value_by_id(self, id: str) -> str:
         return self.get_item_dict()[id]
 
-    def get_id_by_value(self, value: str) -> int:
+    def get_id_by_value(self, value: str) -> str:
         return self.get_item_dict_revert()[value]
 
-    def get_item_dict(self) -> dict[int, str]:
+    def get_item_dict(self) -> dict[str, str]:
         return self.__item_dict
 
-    def get_item_dict_revert(self) -> dict[str, int]:
+    def get_item_dict_revert(self) -> dict[str, str]:
         return self.__item_dict_revert
 
     def get_filepath(self) -> str:
         return self.__filepath
+
+    def has_id(self, id: str) -> bool:
+        return id in self.__item_dict
 
     def size(self) -> int:
         return len(self.get_item_dict())
@@ -77,7 +79,7 @@ class lst:
 
     def to_string(self) -> str:
         out = "#PVF_File\n\n"
-        for k in sorted(self.get_item_dict().keys()):
+        for k in sorted(map(int, self.get_item_dict().keys())):
             out += str(k) + "\n"
-            out += "`%s`\n" % self.get_item_dict()[k]
+            out += "`%s`\n" % self.get_item_dict()[str(k)]
         return out
