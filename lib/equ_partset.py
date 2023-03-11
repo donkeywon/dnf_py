@@ -1,13 +1,14 @@
-import lib.item as lib_item
-import lib.tag as lib_tag
+import lib.item
+import lib.tag
+import lib.pvf
 
 
-class equ_partset(lib_item.item):
-    __partset_dict: dict[str, lib_tag.tag]
+class equ_partset(lib.item.item):
+    __partset_dict: dict[str, lib.tag.tag]
     __partset_path_dict: dict[str, str]
 
-    def __init__(self, pvf_path: str, filepath: str):
-        super().__init__(pvf_path, filepath, False)
+    def __init__(self, filepath: str, pvf_path: str = ""):
+        super().__init__(pvf_path, lib.pvf.ETC, filepath, False)
         self.__partset_dict = {}
         self.__partset_path_dict = {}
         for t in super().get_tag_arr():
@@ -41,18 +42,21 @@ class equ_partset(lib_item.item):
 
     def get_path_by_id(self, id: str) -> str:
         return self.__partset_path_dict[id]
+    
+    def has_id(self, id: str) -> bool:
+        return id in self.__partset_dict
 
-    def get_by_id(self, id: str) -> lib_tag.tag:
+    def get_by_id(self, id: str) -> lib.tag.tag:
         return self.__partset_dict[id]
 
-    def get_partset_dict(self) -> dict[str, lib_tag.tag]:
+    def get_partset_dict(self) -> dict[str, lib.tag.tag]:
         return self.__partset_dict
 
     def get_partset_path_dict(self) -> dict[str, str]:
         return self.__partset_path_dict
 
     def to_string(self) -> str:
-        out = lib_item.PVF_ITEM_START
+        out = lib.item.PVF_ITEM_START
         for k in sorted(map(int, self.get_partset_dict().keys())):
             out += self.get_partset_dict()[str(k)].to_string() + "\n\n"
         return out

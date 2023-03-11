@@ -14,6 +14,7 @@ QUEST = 'quest'
 OBJ = 'passiveobject'
 SKL = 'skill'
 STK = 'stackable'
+ETC = 'etc'
 
 TYPES = [
     AIC,
@@ -87,7 +88,7 @@ class pvf:
                         raise Exception(
                             "item not exists, typ=%s, id=%s, internal_path=%s" % (typ, id, internal_path))
                 try:
-                    it = item(self.__path, os.path.join(self.__path, typ,
+                    it = item(self.__path, typ, os.path.join(self.__path, typ,
                               internal_path), merge_duplicate_tag)
                     typ_item_id_dict[id] = it
                     typ_item_path_dict[internal_path] = it
@@ -123,8 +124,14 @@ class pvf:
     def get_type_item_by_path(self, type: str, path: str) -> item:
         return self.__type_item_path_dict[type][path]
 
+    def has_type_item_by_id(self, type: str, id: str) -> bool:
+        return id in self.__type_item_id_dict[type]
+
+    def has_type_item_by_path(self, type: str, path: str) -> bool:
+        return path in self.__type_item_path_dict[type]
+
     @staticmethod
-    def read_dir(path: str, file_ext: str, warn_duplicate_tag: bool = True) -> dict[str, item]:
+    def read_dir(path: str, file_ext: str, pvf_dir_path: str = "", pvf_sub_dir: str = "", warn_duplicate_tag: bool = True) -> dict[str, item]:
         if not os.path.exists(path):
             return {}
         res: dict[str, item] = {}
@@ -135,7 +142,7 @@ class pvf:
                 file_path = os.path.join(parent, filename)
 
                 try:
-                    i = item(path, file_path, warn_duplicate_tag)
+                    i = item(pvf_dir_path, pvf_sub_dir, file_path, warn_duplicate_tag)
                     res[file_path] = i
                 except Exception as e:
                     raise Exception(

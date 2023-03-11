@@ -48,11 +48,11 @@ class lst:
                     item_id, item_path = '', ''
                 i += 1
 
-    def get_value_by_id(self, id: str) -> str:
+    def get_path_by_id(self, id: str) -> str:
         return self.get_item_dict()[id]
 
-    def get_id_by_value(self, value: str) -> str:
-        return self.get_item_dict_revert()[value]
+    def get_id_by_path(self, path: str) -> str:
+        return self.get_item_dict_revert()[path]
 
     def get_item_dict(self) -> dict[str, str]:
         return self.__item_dict
@@ -65,6 +65,9 @@ class lst:
 
     def has_id(self, id: str) -> bool:
         return id in self.__item_dict
+    
+    def has_path(self, path: str) -> bool:
+        return path in self.__item_dict_revert
 
     def size(self) -> int:
         return len(self.get_item_dict())

@@ -26,19 +26,23 @@ class item:
     __tag_arr: list[tag]
     __tag_dict: dict[str, list[tag]]
     __pvf_dir_path: str
+    __pvf_sub_dir: str
     __filepath: str
     __filename: str
     __ext: str
     __has_duplicate_tag: bool
+    __duplicate_tags: set[str]
 
-    def __init__(self, pvf_dir_path: str, filepath: str, warn_duplicate_tag: bool = True):
+    def __init__(self, pvf_dir_path: str, pvf_sub_dir: str, filepath: str, warn_duplicate_tag: bool = True):
         self.__pvf_dir_path = pvf_dir_path
+        self.__pvf_sub_dir = pvf_sub_dir
         self.__ext = filepath.split(".")[-1]
         self.__filename = os.path.split(filepath)[1]
         self.__filepath = filepath
         self.__tag_arr = []
         self.__tag_dict = {}
         self.__has_duplicate_tag = False
+        self.__duplicate_tags = set[str]()
         with open(self.__filepath, mode='r', encoding='utf-8') as f:
             content = f.read()
             content_arr: list[str] = []
@@ -74,6 +78,7 @@ class item:
             for t in tags:
                 if self.check_duplicate_tag(t):
                     self.__has_duplicate_tag = True
+                    self.__duplicate_tags.add(t.get_name())
                     if warn_duplicate_tag:
                         print("重复的tag: %s, filepath: %s" %
                               (t.get_name(), self.__filepath))
@@ -103,6 +108,8 @@ class item:
                     tn == "pvp" or \
                     tn == "active status control info" or \
                     tn == "LAYER" or \
+                    tn == "expand ani" or \
+                    tn == "effect" or \
                     tn.startswith("hardcoding") or \
                     "motion" in tn:
                 return False
@@ -120,6 +127,9 @@ class item:
 
     def has_duplicate_tag(self) -> bool:
         return self.__has_duplicate_tag
+
+    def get_duplicate_tags(self) -> set[str]:
+        return self.__duplicate_tags
 
     def merge_duplicate_tag(self, tag_name: str, keep_first_or_last: int):
         if not self.has_tag(tag_name):
@@ -155,7 +165,7 @@ class item:
         return self.__pvf_dir_path
 
     def get_internal_path(self) -> str:
-        return self.__filepath.strip(self.__pvf_dir_path).replace("\\", "/").lower().lstrip("/")
+        return self.__filepath[len(os.path.join(self.__pvf_dir_path, self.__pvf_sub_dir)):].replace("\\", "/").strip("/")
 
     def get_filename(self) -> str:
         return self.__filename
@@ -186,6 +196,9 @@ class item:
                 self.add_tag(t, i+1)
                 return
 
+    def delete(self):
+        os.remove(self.__filepath)
+
     def has_tag(self, tag_name: str) -> bool:
         return tag_name in self.get_tag_dict()
 
@@ -198,6 +211,9 @@ class item:
         del self.get_tag_dict()[tag_name]
 
     def write(self, new_path: str):
+        dir = '/'.join(new_path.replace("\\", "/").split("/")[:-1])
+        if not os.path.exists(dir):
+            os.makedirs(dir)
         f = open(new_path, mode='w', encoding='utf-8')
         f.write(self.to_string())
         f.close()

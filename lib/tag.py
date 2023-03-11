@@ -24,9 +24,22 @@ class tag:
 
     def get_value(self) -> str:
         return self.__value
+    
+    def set_value(self, value: str):
+        self.__value = value
 
     def has_sub_tag(self) -> bool:
         return self.__has_sub_tag
+    
+    def get_sub_tag_recurse(self, tag_name: str) -> list[tag]:
+        sub_tags: list[tag] = []
+        if not self.has_sub_tag():
+            return sub_tags
+        for sub_tag in self.get_sub_tags():
+            if sub_tag.get_name() == tag_name:
+                sub_tags.append(sub_tag)
+            sub_tags += sub_tag.get_sub_tag_recurse(tag_name)
+        return sub_tags
 
     def has_close_tag(self) -> bool:
         return self.__has_close_tag
