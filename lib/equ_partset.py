@@ -3,15 +3,16 @@ import lib.tag
 import lib.pvf
 
 
-class equ_partset(lib.item.item):
+class equ_partset:
+    __it: lib.item.item
     __partset_dict: dict[str, lib.tag.tag]
     __partset_path_dict: dict[str, str]
 
-    def __init__(self, filepath: str, pvf_path: str = ""):
-        super().__init__(pvf_path, lib.pvf.ETC, filepath, False)
+    def __init__(self, it: lib.item.item):
+        self.__it = it
         self.__partset_dict = {}
         self.__partset_path_dict = {}
-        for t in super().get_tag_arr():
+        for t in it.get_tag_arr():
             tv = t.get_value()
             if tv == '':
                 continue
@@ -40,9 +41,12 @@ class equ_partset(lib.item.item):
             self.__partset_dict[id] = t
             self.__partset_path_dict[id] = partset_path
 
+    def get_item(self) -> lib.item.item:
+        return self.__it
+
     def get_path_by_id(self, id: str) -> str:
         return self.__partset_path_dict[id]
-    
+
     def has_id(self, id: str) -> bool:
         return id in self.__partset_dict
 

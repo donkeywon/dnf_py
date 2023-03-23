@@ -2,16 +2,17 @@ import lib.pvf
 import lib.item
 
 
-class cashshop(lib.item.item):
+class cashshop:
+    __it: lib.item.item
     __avatar: dict[str, list[str]]
     __package: dict[str, list[str]]
 
-    def __init__(self, pvf_path: str, filepath: str):
-        super().__init__(pvf_path, lib.pvf.ETC, filepath, False)
+    def __init__(self, it: lib.item.item):
+        self.__it = it
         self.__avatar = {}
         self.__package = {}
-        if self.has_tag('avatar'):
-            avatar = self.get_single_tag('avatar')
+        if it.has_tag('avatar'):
+            avatar = it.get_single_tag('avatar')
             avatar_list = avatar.get_value().split('\n')
             for a in avatar_list:
                 a_splitted = a.strip().split('\t')
@@ -19,8 +20,8 @@ class cashshop(lib.item.item):
                 if id in self.__avatar:
                     raise Exception("重复的avatar id: %s", id)
                 self.__avatar[id] = a_splitted
-        if self.has_tag('package'):
-            package = self.get_single_tag('package')
+        if it.has_tag('package'):
+            package = it.get_single_tag('package')
             package_list = package.get_value().split('\n')
             for p in package_list:
                 p_splitted = p.strip().split('\t')
@@ -28,6 +29,9 @@ class cashshop(lib.item.item):
                 if id in self.__package:
                     raise Exception("重复的package id: %s", id)
                 self.__package[id] = p_splitted
+
+    def get_item(self) -> lib.item.item:
+        return self.__it
 
     def get_avatar_dict(self) -> dict[str, list[str]]:
         return self.__avatar

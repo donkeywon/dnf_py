@@ -19,18 +19,27 @@ class tag:
         self.__has_sub_tag = True
         self.get_sub_tags().append(t)
 
+    def clean_sub_tags(self):
+        self.__sub_tags = []
+
     def get_name(self) -> str:
         return self.__name
 
     def get_value(self) -> str:
         return self.__value
-    
+
     def set_value(self, value: str):
         self.__value = value
 
     def has_sub_tag(self) -> bool:
         return self.__has_sub_tag
-    
+
+    def has_sub_tag_name(self, name: str) -> bool:
+        for t in self.get_sub_tags():
+            if t.get_name() == name:
+                return True
+        return False
+
     def get_sub_tag_recurse(self, tag_name: str) -> list[tag]:
         sub_tags: list[tag] = []
         if not self.has_sub_tag():
@@ -46,6 +55,19 @@ class tag:
 
     def get_sub_tags(self) -> list[tag]:
         return self.__sub_tags
+
+    def get_sub_tag(self, tag_name: str) -> list[tag]:
+        sts: list[tag] = []
+        sub_tags = self.get_sub_tags()
+        if len(sub_tags) == 0:
+            return sts
+        for t in sub_tags:
+            if t.get_name() == tag_name:
+                sts.append(t)
+        return sts
+
+    def get_single_sub_tag(self, tag_name: str) -> tag:
+        return self.get_sub_tag(tag_name)[0]
 
     def to_string(self, depth: int = 0) -> str:
         depth_prefix = ''
