@@ -2,14 +2,14 @@ import os
 
 
 class lst:
-    __item_dict: dict[str, str]
-    __item_dict_revert: dict[str, str]
-    __filepath: str
+    _item_dict: dict[str, str]
+    _item_dict_revert: dict[str, str]
+    _filepath: str
 
     def __init__(self, filepath: str):
-        self.__filepath = filepath
-        self.__item_dict = {}
-        self.__item_dict_revert = {}
+        self._filepath = filepath
+        self._item_dict = {}
+        self._item_dict_revert = {}
         if not os.path.exists(filepath):
             raise Exception("lst file not exists, filepath: %s" % filepath)
         with open(filepath, mode='r', encoding='utf-8') as f:
@@ -37,13 +37,13 @@ class lst:
 
                 if id_done and path_done:
                     item_path = item_path.lower()
-                    if item_id in self.__item_dict and item_path not in self.__item_dict_revert:
+                    if item_id in self._item_dict and item_path not in self._item_dict_revert:
                         raise Exception("重复id：" + item_id +
                                         ", lst: " + filepath)
-                    if item_path in self.__item_dict_revert and item_id not in self.__item_dict:
+                    if item_path in self._item_dict_revert and item_id not in self._item_dict:
                         print("重复value：" + item_path + ", lst: " + filepath)
-                    self.__item_dict[item_id] = item_path
-                    self.__item_dict_revert[item_path] = item_id
+                    self._item_dict[item_id] = item_path
+                    self._item_dict_revert[item_path] = item_id
                     id_done, path_done = False, False
                     item_id, item_path = '', ''
                 i += 1
@@ -55,19 +55,19 @@ class lst:
         return self.get_item_dict_revert()[path]
 
     def get_item_dict(self) -> dict[str, str]:
-        return self.__item_dict
+        return self._item_dict
 
     def get_item_dict_revert(self) -> dict[str, str]:
-        return self.__item_dict_revert
+        return self._item_dict_revert
 
     def get_filepath(self) -> str:
-        return self.__filepath
+        return self._filepath
 
     def has_id(self, id: str) -> bool:
-        return id in self.__item_dict
-    
+        return id in self._item_dict
+
     def has_path(self, path: str) -> bool:
-        return path in self.__item_dict_revert
+        return path in self._item_dict_revert
 
     def size(self) -> int:
         return len(self.get_item_dict())

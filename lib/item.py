@@ -15,6 +15,7 @@ EXT_QUEST = "qst"
 EXT_OBJ = "obj"
 EXT_SKL = "skl"
 EXT_STK = "stk"
+EXT_SHP = "shp"
 
 MERGE_TAG_KEEP_FIRST = 0
 MERGE_TAG_KEEP_LAST = 1
@@ -23,27 +24,27 @@ PVF_ITEM_START = "#PVF_File\n\n"
 
 
 class item:
-    __tag_arr: list[tag]
-    __tag_dict: dict[str, list[tag]]
-    __pvf_dir_path: str
-    __pvf_sub_dir: str
-    __filepath: str
-    __filename: str
-    __ext: str
-    __has_duplicate_tag: bool
-    __duplicate_tags: set[str]
+    _tag_arr: list[tag]
+    _tag_dict: dict[str, list[tag]]
+    _pvf_dir_path: str
+    _pvf_sub_dir: str
+    _filepath: str
+    _filename: str
+    _ext: str
+    _has_duplicate_tag: bool
+    _duplicate_tags: set[str]
 
     def __init__(self, pvf_dir_path: str, pvf_sub_dir: str, filepath: str, warn_duplicate_tag: bool = True):
-        self.__pvf_dir_path = pvf_dir_path
-        self.__pvf_sub_dir = pvf_sub_dir
-        self.__ext = filepath.split(".")[-1]
-        self.__filename = os.path.split(filepath)[1]
-        self.__filepath = filepath
-        self.__tag_arr = []
-        self.__tag_dict = {}
-        self.__has_duplicate_tag = False
-        self.__duplicate_tags = set[str]()
-        with open(self.__filepath, mode='r', encoding='utf-8') as f:
+        self._pvf_dir_path = pvf_dir_path
+        self._pvf_sub_dir = pvf_sub_dir
+        self._ext = filepath.split(".")[-1]
+        self._filename = os.path.split(filepath)[1]
+        self._filepath = filepath
+        self._tag_arr = []
+        self._tag_dict = {}
+        self._has_duplicate_tag = False
+        self._duplicate_tags = set[str]()
+        with open(self._filepath, mode='r', encoding='utf-8') as f:
             content = f.read()
             content_arr: list[str] = []
             value = ''
@@ -77,19 +78,19 @@ class item:
             tags = self._parse_content(content_arr)
             for t in tags:
                 if self.check_duplicate_tag(t):
-                    self.__has_duplicate_tag = True
-                    self.__duplicate_tags.add(t.get_name())
+                    self._has_duplicate_tag = True
+                    self._duplicate_tags.add(t.get_name())
                     if warn_duplicate_tag:
                         print("重复的tag: %s, filepath: %s" %
-                              (t.get_name(), self.__filepath))
-                self.__tag_arr.append(t)
-                if t.get_name() not in self.__tag_dict:
-                    self.__tag_dict[t.get_name()] = []
-                self.__tag_dict[t.get_name()].append(t)
+                              (t.get_name(), self._filepath))
+                self._tag_arr.append(t)
+                if t.get_name() not in self._tag_dict:
+                    self._tag_dict[t.get_name()] = []
+                self._tag_dict[t.get_name()].append(t)
 
     def check_duplicate_tag(self, t: tag):
         tn = t.get_name()
-        if self.__ext == EXT_EQU:
+        if self._ext == EXT_EQU:
             if tn == "layer variation" or \
                     tn == "variation" or \
                     tn == "if" or \
@@ -113,23 +114,23 @@ class item:
                     tn.startswith("hardcoding") or \
                     "motion" in tn:
                 return False
-        elif self.__ext == EXT_AIC:
+        elif self._ext == EXT_AIC:
             if tn == "targeting bonus":  # 不知道这个tag是什么意思，先不合并
                 return False
-        elif self.__ext == EXT_STK:
+        elif self._ext == EXT_STK:
             if tn == "booster select category" or \
                     tn == "package data selection" or \
                     tn == "icon mark" or \
                     tn == "booster info":
                 return False
-        if tn in self.__tag_dict:
+        if tn in self._tag_dict:
             return True
 
     def has_duplicate_tag(self) -> bool:
-        return self.__has_duplicate_tag
+        return self._has_duplicate_tag
 
     def get_duplicate_tags(self) -> set[str]:
-        return self.__duplicate_tags
+        return self._duplicate_tags
 
     def merge_duplicate_tag(self, tag_name: str, keep_first_or_last: int):
         if not self.has_tag(tag_name):
@@ -159,28 +160,36 @@ class item:
         return out
 
     def get_filepath(self) -> str:
-        return self.__filepath
+        return self._filepath
 
     def get_pvf_dir_path(self) -> str:
-        return self.__pvf_dir_path
+        return self._pvf_dir_path
 
     def get_internal_path(self) -> str:
-        return self.__filepath[len(os.path.join(self.__pvf_dir_path, self.__pvf_sub_dir)):].replace("\\", "/").strip("/")
+        return self._filepath[len(os.path.join(self._pvf_dir_path, self._pvf_sub_dir)):].replace("\\", "/").strip("/")
 
     def get_filename(self) -> str:
-        return self.__filename
+        return self._filename
 
     def get_tag_arr(self) -> list[tag]:
-        return self.__tag_arr
+        return self._tag_arr
 
     def get_tag_dict(self) -> dict[str, list[tag]]:
-        return self.__tag_dict
+        return self._tag_dict
 
     def get_tag(self, tag_name: str) -> list[tag]:
         return self.get_tag_dict()[tag_name]
 
     def get_single_tag(self, tag_name: str) -> tag:
         return self.get_tag_dict()[tag_name][0]
+
+    def get_single_tag_value(self, tag_name: str) -> str:
+        return self.get_tag_dict()[tag_name][0].get_value()
+
+    def get_single_tag_value_or_default(self, tag_name: str, default: str) -> str:
+        if not self.has_tag(tag_name):
+            return default
+        return self.get_single_tag_value(tag_name)
 
     def add_tag(self, t: tag, index: int = -1):
         if index == -1:
@@ -197,7 +206,7 @@ class item:
                 return
 
     def delete(self):
-        os.remove(self.__filepath)
+        os.remove(self._filepath)
 
     def has_tag(self, tag_name: str) -> bool:
         return tag_name in self.get_tag_dict()

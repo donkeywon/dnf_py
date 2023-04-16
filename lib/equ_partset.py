@@ -4,14 +4,14 @@ import lib.pvf
 
 
 class equ_partset:
-    __it: lib.item.item
-    __partset_dict: dict[str, lib.tag.tag]
-    __partset_path_dict: dict[str, str]
+    _it: lib.item.item
+    _partset_dict: dict[str, lib.tag.tag]
+    _partset_path_dict: dict[str, str]
 
     def __init__(self, it: lib.item.item):
-        self.__it = it
-        self.__partset_dict = {}
-        self.__partset_path_dict = {}
+        self._it = it
+        self._partset_dict = {}
+        self._partset_path_dict = {}
         for t in it.get_tag_arr():
             tv = t.get_value()
             if tv == '':
@@ -36,28 +36,28 @@ class equ_partset:
                 i += 1
             if partset_path == '':
                 raise Exception("Invalid equ partset value: %s", tv)
-            if id in self.__partset_dict:
+            if id in self._partset_dict:
                 raise Exception("重复的partset id: %s", id)
-            self.__partset_dict[id] = t
-            self.__partset_path_dict[id] = partset_path
+            self._partset_dict[id] = t
+            self._partset_path_dict[id] = partset_path
 
     def get_item(self) -> lib.item.item:
-        return self.__it
+        return self._it
 
     def get_path_by_id(self, id: str) -> str:
-        return self.__partset_path_dict[id]
+        return self._partset_path_dict[id]
 
     def has_id(self, id: str) -> bool:
-        return id in self.__partset_dict
+        return id in self._partset_dict
 
     def get_by_id(self, id: str) -> lib.tag.tag:
-        return self.__partset_dict[id]
+        return self._partset_dict[id]
 
     def get_partset_dict(self) -> dict[str, lib.tag.tag]:
-        return self.__partset_dict
+        return self._partset_dict
 
     def get_partset_path_dict(self) -> dict[str, str]:
-        return self.__partset_path_dict
+        return self._partset_path_dict
 
     def to_string(self) -> str:
         out = lib.item.PVF_ITEM_START

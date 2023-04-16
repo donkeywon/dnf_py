@@ -2,37 +2,37 @@ from __future__ import annotations
 
 
 class tag:
-    __name: str
-    __value: str
-    __has_sub_tag: bool
-    __has_close_tag: bool
-    __sub_tags: list[tag]
+    _name: str
+    _value: str
+    _has_sub_tag: bool
+    _has_close_tag: bool
+    _sub_tags: list[tag]
 
     def __init__(self, name: str, value: str, has_close_tag: bool = False):
-        self.__name = name
-        self.__value = value
-        self.__has_sub_tag = False
-        self.__has_close_tag = has_close_tag
-        self.__sub_tags = []
+        self._name = name
+        self._value = value
+        self._has_sub_tag = False
+        self._has_close_tag = has_close_tag
+        self._sub_tags = []
 
     def add_sub_tag(self, t: tag):
-        self.__has_sub_tag = True
+        self._has_sub_tag = True
         self.get_sub_tags().append(t)
 
     def clean_sub_tags(self):
-        self.__sub_tags = []
+        self._sub_tags = []
 
     def get_name(self) -> str:
-        return self.__name
+        return self._name
 
     def get_value(self) -> str:
-        return self.__value
+        return self._value
 
     def set_value(self, value: str):
-        self.__value = value
+        self._value = value
 
     def has_sub_tag(self) -> bool:
-        return self.__has_sub_tag
+        return self._has_sub_tag
 
     def has_sub_tag_name(self, name: str) -> bool:
         for t in self.get_sub_tags():
@@ -51,10 +51,10 @@ class tag:
         return sub_tags
 
     def has_close_tag(self) -> bool:
-        return self.__has_close_tag
+        return self._has_close_tag
 
     def get_sub_tags(self) -> list[tag]:
-        return self.__sub_tags
+        return self._sub_tags
 
     def get_sub_tag(self, tag_name: str) -> list[tag]:
         sts: list[tag] = []

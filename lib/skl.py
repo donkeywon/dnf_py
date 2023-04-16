@@ -6,44 +6,44 @@ import lib.pvf
 
 
 class skl:
-    __it: lib.item.item
-    __dgn_lvl_info_column: int
-    __pvp_lvl_info_column: int
-    __dgn_lvl_info_tag: lib.tag.tag
-    __pvp_lvl_info_tag: lib.tag.tag
-    __dgn_lvl_info: list[list[int]]
-    __pvp_lvl_info: list[list[int]]
+    _it: lib.item.item
+    _dgn_lvl_info_column: int
+    _pvp_lvl_info_column: int
+    _dgn_lvl_info_tag: lib.tag.tag
+    _pvp_lvl_info_tag: lib.tag.tag
+    _dgn_lvl_info: list[list[int]]
+    _pvp_lvl_info: list[list[int]]
 
     def __init__(self, it: lib.item.item):
-        self.__it = it
-        self.__dgn_lvl_info_column = 0
-        self.__dgn_lvl_info = []
-        self.__pvp_lvl_info_column = 0
-        self.__pvp_lvl_info = []
+        self._it = it
+        self._dgn_lvl_info_column = 0
+        self._dgn_lvl_info = []
+        self._pvp_lvl_info_column = 0
+        self._pvp_lvl_info = []
         dgn_lvl_info = ""
         pvp_lvl_info = ""
         if it.has_tag('dungeon'):
             if it.get_single_tag('dungeon').has_sub_tag_name('level info'):
-                self.__dgn_lvl_info_tag = it.get_single_tag(
+                self._dgn_lvl_info_tag = it.get_single_tag(
                     'dungeon').get_single_sub_tag('level info')
-                dgn_lvl_info = self.__dgn_lvl_info_tag.get_value()
+                dgn_lvl_info = self._dgn_lvl_info_tag.get_value()
         elif it.has_tag('level info'):
-            self.__dgn_lvl_info_tag = it.get_single_tag('level info')
-            dgn_lvl_info = self.__dgn_lvl_info_tag.get_value()
+            self._dgn_lvl_info_tag = it.get_single_tag('level info')
+            dgn_lvl_info = self._dgn_lvl_info_tag.get_value()
 
         if it.has_tag('pvp'):
             if it.get_single_tag('pvp').has_sub_tag_name('level info'):
-                self.__pvp_lvl_info_tag = it.get_single_tag(
+                self._pvp_lvl_info_tag = it.get_single_tag(
                     'pvp').get_single_sub_tag('level info')
-                pvp_lvl_info = self.__pvp_lvl_info_tag.get_value()
+                pvp_lvl_info = self._pvp_lvl_info_tag.get_value()
         if dgn_lvl_info != "":
             res = self.parse_lvl_info(dgn_lvl_info)
-            self.__dgn_lvl_info_column = res[0]
-            self.__dgn_lvl_info = res[1]
+            self._dgn_lvl_info_column = res[0]
+            self._dgn_lvl_info = res[1]
         if pvp_lvl_info != "":
             res = self.parse_lvl_info(pvp_lvl_info)
-            self.__pvp_lvl_info_column = res[0]
-            self.__pvp_lvl_info = res[1]
+            self._pvp_lvl_info_column = res[0]
+            self._pvp_lvl_info = res[1]
 
     def parse_lvl_info(self, lvl_info: str) -> tuple[int, list[list[int]]]:
         lvl_info = lvl_info.replace("\n", "\t")
@@ -55,6 +55,7 @@ class skl:
         lvl_info_s = lvl_info_s[1:]
         if column != 0 and len(lvl_info_s) % column != 0:
             print("invalid lvl info", self.get_item().get_filepath())
+            return column, []
 
         lvl_info_lst: list[list[int]] = []
         for i in range(0, len(lvl_info_s), column):
@@ -65,25 +66,25 @@ class skl:
         return column, lvl_info_lst
 
     def get_item(self) -> lib.item.item:
-        return self.__it
+        return self._it
 
     def get_dgn_lvl_info(self) -> list[list[int]]:
-        return self.__dgn_lvl_info
+        return self._dgn_lvl_info
 
     def get_pvp_lvl_info(self) -> list[list[int]]:
-        return self.__pvp_lvl_info
+        return self._pvp_lvl_info
 
     def get_dgn_lvl_info_column(self) -> int:
-        return self.__dgn_lvl_info_column
+        return self._dgn_lvl_info_column
 
     def get_pvp_lvl_info_column(self) -> int:
-        return self.__pvp_lvl_info_column
+        return self._pvp_lvl_info_column
 
     def set_dgn_lvl_info(self, lvl_info: list[list[int]]):
-        self.__dgn_lvl_info = lvl_info
+        self._dgn_lvl_info = lvl_info
 
     def set_pvp_lvl_info(self, lvl_info: list[list[int]]):
-        self.__pvp_lvl_info = lvl_info
+        self._pvp_lvl_info = lvl_info
 
     def get_required_level(self) -> int:
         if not self.get_item().has_tag("required level"):
@@ -91,10 +92,10 @@ class skl:
         return int(self.get_item().get_single_tag("required level").get_value())
 
     def get_dgn_lvl_info_tag(self) -> lib.tag.tag:
-        return self.__dgn_lvl_info_tag
+        return self._dgn_lvl_info_tag
 
     def get_pvp_lvl_info_tag(self) -> lib.tag.tag:
-        return self.__pvp_lvl_info_tag
+        return self._pvp_lvl_info_tag
 
     def shrink_dgn_lvl_info(self, min_lvl: int, remain: int):
         if len(self.get_dgn_lvl_info()) > 0:
