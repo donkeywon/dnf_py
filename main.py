@@ -19,12 +19,13 @@ import lib.qst
 
 def sort_hellparty():
     it = lib_item.item(
-        "", "", "D:\\workspace\\code\\other\\pvf_1031\\etc\\hellparty.etc")
-    group_tag = it.get_single_tag('hellparty monster group')
+        "", "", "D:\\workspace\\code\\other\\pvf_1031\\etc\\hellparty.etc"
+    )
+    group_tag = it.get_single_tag("hellparty monster group")
     groups = group_tag.get_sub_tags()
     groups_tuple_list: list[tuple[lib_tag.tag, lib_tag.tag]] = []
     for i in range(0, len(groups), 2):
-        groups_tuple_list.append((groups[i], groups[i+1]))
+        groups_tuple_list.append((groups[i], groups[i + 1]))
     groups_tuple_list = sorted(
         groups_tuple_list, key=lambda x: int(x[0].get_value()))
     group_tag.clean_sub_tags()
@@ -49,24 +50,33 @@ def split_equ_by_rarity_to_new_path():
     path = "D:\\workspace\\code\\other\\pvf_1031\\"
     # path = "C:\\Users\\donkeywon\\Desktop\\86\\"
 
-    d = lib_pvf.pvf.read_dir(os.path.join(
-        path, "equipment\\character\\thief\\weapon"), lib_item.EXT_EQU, warn_duplicate_tag=True)
+    d = lib_pvf.pvf.read_dir(
+        os.path.join(path, "equipment\\character\\thief\\weapon"),
+        lib_item.EXT_EQU,
+        warn_duplicate_tag=True,
+    )
 
     for fpath, i in d.items():
-        if 'avatar\\' in i.get_filepath() or \
-            '\\etc\\' in i.get_filepath() or \
-            '\\title\\' in i.get_filepath() or \
-                'pvp' in i.get_filepath() or \
-            '(舊)' in i.get_tag('name')[0].get_value() or \
-                '(旧)' in i.get_tag('name')[0].get_value():
+        if (
+            "avatar\\" in i.get_filepath()
+            or "\\etc\\" in i.get_filepath()
+            or "\\title\\" in i.get_filepath()
+            or "pvp" in i.get_filepath()
+            or "(舊)" in i.get_tag("name")[0].get_value()
+            or "(旧)" in i.get_tag("name")[0].get_value()
+        ):
             continue
 
-        if not i.has_tag('grade'):
+        if not i.has_tag("grade"):
             continue
 
-        grade = int(i.get_tag('grade')[0].get_value())
-        new_path = os.path.join("C:\\Users\\donkeywon\\Desktop\\pvf_1031_s\\", "new", i.get_tag(
-            'rarity')[0].get_value(), fpath.removeprefix(path))
+        grade = int(i.get_tag("grade")[0].get_value())
+        new_path = os.path.join(
+            "C:\\Users\\donkeywon\\Desktop\\pvf_1031_s\\",
+            "new",
+            i.get_tag("rarity")[0].get_value(),
+            fpath.removeprefix(path),
+        )
         dir = os.path.split(new_path)[0]
         if not os.path.exists(dir):
             os.makedirs(dir)
@@ -75,13 +85,31 @@ def split_equ_by_rarity_to_new_path():
 
 def fix_avatar_type_select():
     equ_lst = lib_lst.lst(
-        "D:\\workspace\\code\\other\\pvf_1031\\equipment\\equipment.lst")
+        "D:\\workspace\\code\\other\\pvf_1031\\equipment\\equipment.lst"
+    )
 
-    avatar_dirs = ["swordman/avatar", "fighter/avatar", "fighter/at_avatar",
-                   "gunner/avatar", "gunner/at_avatar", "mage/avatar",
-                   "mage/at_avatar", "priest/avatar", "thief/avatar"]
-    avatar_type_dirs = ["cap", "hair", "face", "neck",
-                        "coat", "belt", "pants", "shoes", "skin"]
+    avatar_dirs = [
+        "swordman/avatar",
+        "fighter/avatar",
+        "fighter/at_avatar",
+        "gunner/avatar",
+        "gunner/at_avatar",
+        "mage/avatar",
+        "mage/at_avatar",
+        "priest/avatar",
+        "thief/avatar",
+    ]
+    avatar_type_dirs = [
+        "cap",
+        "hair",
+        "face",
+        "neck",
+        "coat",
+        "belt",
+        "pants",
+        "shoes",
+        "skin",
+    ]
 
     output: list[str] = []
 
@@ -91,49 +119,73 @@ def fix_avatar_type_select():
         for avatar_type in avatar_type_dirs:
             id_rare_list: list[str] = []
             id_normal_list: list[str] = []
-            items = lib_pvf.pvf.read_dir(os.path.join("D:\\workspace\\code\\other\\pvf_1031\\equipment\\character",
-                                                      avatar_dir, avatar_type), lib_item.EXT_EQU, "D:\\workspace\\code\\other\\pvf_1031", lib_pvf.EQU)
+            items = lib_pvf.pvf.read_dir(
+                os.path.join(
+                    "D:\\workspace\\code\\other\\pvf_1031\\equipment\\character",
+                    avatar_dir,
+                    avatar_type,
+                ),
+                lib_item.EXT_EQU,
+                "D:\\workspace\\code\\other\\pvf_1031",
+                lib_pvf.EQU,
+            )
             for it in items.values():
-                if 'weapon/' in it.get_internal_path():
+                if "weapon/" in it.get_internal_path():
                     continue
-                if it.get_single_tag('name').get_value() == '``':
+                if it.get_single_tag("name").get_value() == "``":
                     continue
                 if not equ_lst.has_path(it.get_internal_path()):
                     continue
-                tag_value = ''
-                if it.has_tag('grade') and it.get_single_tag('grade').get_value() == '3':
+                tag_value = ""
+                if (
+                    it.has_tag("grade")
+                    and it.get_single_tag("grade").get_value() == "3"
+                ):
                     id_rare_list.append(
                         equ_lst.get_id_by_path(it.get_internal_path()))
-                    tag_value = '''7	0	0	100	0
+                    tag_value = """7	0	0	100	0
 30	0	0	300	0
-0	0	0	1000	0'''
+0	0	0	1000	0"""
                 else:
                     id_normal_list.append(
-                        equ_lst.get_id_by_path(it.get_internal_path()))
-                    tag_value = '''7	0	0	50	0
+                        equ_lst.get_id_by_path(it.get_internal_path())
+                    )
+                    tag_value = """7	0	0	50	0
 30	0	0	150	0
-0	0	0	500	0'''
-                if not it.has_tag('avatar type select'):
+0	0	0	500	0"""
+                if not it.has_tag("avatar type select"):
                     it.add_tag(lib_tag.tag(
-                        'avatar type select', tag_value, True))
+                        "avatar type select", tag_value, True))
                 else:
                     it.get_single_tag(
-                        'avatar type select').set_value(tag_value)
+                        "avatar type select").set_value(tag_value)
                 it.overwrite()
 
             start_idx = 1000000 * idx + 100000 * _idx
             for id in id_normal_list:
-                output.append(str(start_idx) + "\t" + id +
-                              "\t3\t0\t0\t-1\t-1\t" + id + "\t4\t0\t0\t-1\n")
+                output.append(
+                    str(start_idx)
+                    + "\t"
+                    + id
+                    + "\t3\t0\t0\t-1\t-1\t"
+                    + id
+                    + "\t4\t0\t0\t-1\n"
+                )
                 start_idx += 1
             for id in id_rare_list:
-                output.append(str(start_idx) + "\t" + id +
-                              "\t3\t0\t0\t-1\t-1\t" + id + "\t4\t0\t0\t-1\n")
+                output.append(
+                    str(start_idx)
+                    + "\t"
+                    + id
+                    + "\t3\t0\t0\t-1\t-1\t"
+                    + id
+                    + "\t4\t0\t0\t-1\n"
+                )
                 start_idx += 1
             _idx += 1
         idx += 1
 
-    f = open('avatar.txt', mode='w', encoding='utf-8')
+    f = open("avatar.txt", mode="w", encoding="utf-8")
     for line in output:
         f.write(line)
     f.close()
@@ -144,29 +196,33 @@ def fix_hell_map_has_no_hellparty_group():
     # path = "C:\\Users\\donkeywon\\Desktop\\86\\"
 
     hellparty_item = lib_item.item(
-        "", "", "D:\\workspace\\code\\other\\pvf_1031\\etc\\hellparty.etc")
-    group_tag = hellparty_item.get_single_tag('hellparty monster group')
+        "", "", "D:\\workspace\\code\\other\\pvf_1031\\etc\\hellparty.etc"
+    )
+    group_tag = hellparty_item.get_single_tag("hellparty monster group")
     groups = group_tag.get_sub_tags()
     groups_map = {}
     for i in range(0, len(groups), 2):
         groups_map[groups[i].get_value()] = 1
 
-    d = lib_pvf.pvf.read_dir(os.path.join(
-        path, "map"), lib_item.EXT_MAP, warn_duplicate_tag=False)
+    d = lib_pvf.pvf.read_dir(
+        os.path.join(path, "map"), lib_item.EXT_MAP, warn_duplicate_tag=False
+    )
 
     for fpath, it in d.items():
-        if not it.has_tag('special passive object'):
+        if not it.has_tag("special passive object"):
             continue
 
-        spo = it.get_single_tag('special passive object').get_value()
-        if '[hellparty]' not in spo:
+        spo = it.get_single_tag("special passive object").get_value()
+        if "[hellparty]" not in spo:
             continue
 
-        spos = spo.split('`[hellparty]`')
+        spos = spo.split("`[hellparty]`")
         hellparty: list[str] = spos[1].split(
-            '`[/hellparty]`')[0].strip().split("\t")
-        hellparty = list(filter(lambda x: x != '', list(
-            map(lambda x: x.strip(), hellparty))))
+            "`[/hellparty]`")[0].strip().split("\t")
+        hellparty = list(
+            filter(lambda x: x != "", list(
+                map(lambda x: x.strip(), hellparty)))
+        )
 
         for i in range(0, len(hellparty), 3):
             if hellparty[i] not in groups_map:
@@ -177,7 +233,9 @@ def compare_and_fix_skill_static():
     origin_path = "C:\\Users\\donkeywon\\Desktop\\86"
     pvf_path = "D:\\workspace\\code\\other\\pvf_1031"
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_path, lib_pvf.SKL), lib_item.EXT_SKL, pvf_path, "skill")
+        os.path.join(
+            pvf_path, lib_pvf.SKL), lib_item.EXT_SKL, pvf_path, "skill"
+    )
 
     skl_lst = lib_lst.lst(os.path.join(
         pvf_path, lib_pvf.SKL, "gunnerskill.lst"))
@@ -213,16 +271,23 @@ def compare_and_fix_skill_static():
             continue
         origin_it = lib_item.item(
             origin_path, lib_pvf.SKL, origin_skl_path, False)
-        if not origin_it.has_tag('dungeon') and not origin_it.has_tag('level info'):
+        if not origin_it.has_tag("dungeon") and not origin_it.has_tag("level info"):
             continue
-        for t in ['static data', 'cool time', 'consume MP']:
-            if origin_it.has_tag('dungeon') and not origin_it.get_single_tag('dungeon').has_sub_tag_name(t):
+        for t in ["static data", "cool time", "consume MP"]:
+            if origin_it.has_tag("dungeon") and not origin_it.get_single_tag(
+                "dungeon"
+            ).has_sub_tag_name(t):
                 continue
-            if origin_it.has_tag('dungeon'):
-                origin_static_data = origin_it.get_single_tag(
-                    'dungeon').get_single_sub_tag(t).get_value()
-                new_static_data = it.get_single_tag(
-                    'dungeon').get_single_sub_tag(t).get_value()
+            if origin_it.has_tag("dungeon"):
+                origin_static_data = (
+                    origin_it.get_single_tag("dungeon")
+                    .get_single_sub_tag(t)
+                    .get_value()
+                )
+                new_static_data = (
+                    it.get_single_tag(
+                        "dungeon").get_single_sub_tag(t).get_value()
+                )
                 if origin_static_data != new_static_data:
                     path = it.get_internal_path()
                     if skl_lst.has_path(path):
@@ -232,10 +297,8 @@ def compare_and_fix_skill_static():
                     # origin_it.write(os.path.join(
                     #     "C:\\Users\\donkeywon\\Desktop\\1031.origin.static", origin_it.get_internal_path()))
             elif origin_it.has_tag(t) and it.has_tag(t):
-                origin_static_data = origin_it.get_single_tag(
-                    t).get_value()
-                new_static_data = it.get_single_tag(
-                    t).get_value()
+                origin_static_data = origin_it.get_single_tag(t).get_value()
+                new_static_data = it.get_single_tag(t).get_value()
                 if origin_static_data != new_static_data:
                     path = it.get_internal_path()
                     if skl_lst.has_path(path):
@@ -305,56 +368,93 @@ def calc_price(name, level, rarity):
 
 def gen_price_and_material():
     d = lib_pvf.pvf.read_dir(
-        "D:\\workspace\\code\\other\\pvf_1031\\equipment\\character", lib_item.EXT_EQU)
+        "D:\\workspace\\code\\other\\pvf_1031\\equipment\\character", lib_item.EXT_EQU
+    )
     for it in d.values():
-        if it.has_tag('equipment type') and 'avatar' in it.get_single_tag('equipment type').get_value() or it.has_tag('avatar type select') or it.has_tag('avatar select ability') or not it.has_tag('rarity') or not it.has_tag('name') or not it.has_tag('minimum level'):
+        if (
+            it.has_tag("equipment type")
+            and "avatar" in it.get_single_tag("equipment type").get_value()
+            or it.has_tag("avatar type select")
+            or it.has_tag("avatar select ability")
+            or not it.has_tag("rarity")
+            or not it.has_tag("name")
+            or not it.has_tag("minimum level")
+        ):
             continue
 
-        rarity = it.get_single_tag('rarity').get_value()
-        if rarity != '4' and rarity != '2' and rarity != '3' and rarity != '5':
+        rarity = it.get_single_tag("rarity").get_value()
+        if rarity != "4" and rarity != "2" and rarity != "3" and rarity != "5":
             continue
 
-        name = it.get_single_tag('name').get_value()
-        minimum_level = it.get_single_tag('minimum level').get_value()
-        if rarity == '4':
-            if not it.has_tag('need material'):
-                it.add_tag(lib_tag.tag("need material",
-                                       calc_ss_need_material(minimum_level)))
+        name = it.get_single_tag("name").get_value()
+        minimum_level = it.get_single_tag("minimum level").get_value()
+        if rarity == "4":
+            if not it.has_tag("need material"):
+                it.add_tag(
+                    lib_tag.tag("need material",
+                                calc_ss_need_material(minimum_level))
+                )
             else:
-                need_material = it.get_single_tag('need material')
-                if need_material.get_value().startswith('3285') or need_material.get_value().startswith('3260'):
+                need_material = it.get_single_tag("need material")
+                if need_material.get_value().startswith(
+                    "3285"
+                ) or need_material.get_value().startswith("3260"):
                     need_material.set_value(
                         calc_ss_need_material(minimum_level))
-                elif not need_material.get_value().startswith('2749212'):
+                elif not need_material.get_value().startswith("2749212"):
                     print(it.get_internal_path(),
-                          it.get_single_tag('name').get_value())
-        if not it.has_tag('price'):
-            it.add_tag(lib_tag.tag('price', calc_price(
+                          it.get_single_tag("name").get_value())
+        if not it.has_tag("price"):
+            it.add_tag(lib_tag.tag("price", calc_price(
                 name, minimum_level, rarity)))
         else:
-            it.get_single_tag('price').set_value(
-                calc_price(name, minimum_level, rarity))
-        if not it.has_tag('value'):
-            it.add_tag(lib_tag.tag('value', calc_value(
+            it.get_single_tag("price").set_value(
+                calc_price(name, minimum_level, rarity)
+            )
+        if not it.has_tag("value"):
+            it.add_tag(lib_tag.tag("value", calc_value(
                 name, minimum_level, rarity)))
         else:
-            it.get_single_tag('value').set_value(
-                calc_value(name, minimum_level, rarity))
+            it.get_single_tag("value").set_value(
+                calc_value(name, minimum_level, rarity)
+            )
         it.overwrite()
 
 
 def is_not_need_creation_rate(name: str) -> bool:
-    return "(旧)" in name or "(傀儡)" in name or "[活动" in name or "古老的" in name or "初学者的成长" in name or "茁壮冒险家的成长" in name or "APC专用" in name or "租借活动" in name or "(活动)" in name or "网吧" in name or name.startswith("84_") or name.startswith("85_") or "无限的斯特" in name or "无尽之逐神" in name or "网咖" in name
+    return (
+        "(旧)" in name
+        or "(傀儡)" in name
+        or "[活动" in name
+        or "古老的" in name
+        or "初学者的成长" in name
+        or "茁壮冒险家的成长" in name
+        or "APC专用" in name
+        or "租借活动" in name
+        or "(活动)" in name
+        or "网吧" in name
+        or name.startswith("84_")
+        or name.startswith("85_")
+        or "无限的斯特" in name
+        or "无尽之逐神" in name
+        or "网咖" in name
+    )
 
 
 def fix_creation_rate():
     pvf_dir = "D:\\workspace\\code\\other\\pvf_1031"
     equ_lst = lib_lst.lst(os.path.join(pvf_dir, "equipment\\equipment.lst"))
-    indep_drop = lib_indep_drop.indep_drop(os.path.join(
-        pvf_dir, "etc\\independent_drop.etc"), pvf_dir)
+    indep_drop = lib_indep_drop.indep_drop(
+        os.path.join(pvf_dir, "etc\\independent_drop.etc"), pvf_dir
+    )
 
-    d = lib_pvf.pvf.read_dir(os.path.join(
-        pvf_dir, "n_quest"), lib_item.EXT_QUEST, pvf_dir, lib_pvf.QUEST, False)
+    d = lib_pvf.pvf.read_dir(
+        os.path.join(pvf_dir, "n_quest"),
+        lib_item.EXT_QUEST,
+        pvf_dir,
+        lib_pvf.QUEST,
+        False,
+    )
     qsts: list[lib.qst.qst] = []
     for it in d.values():
         qsts.append(lib.qst.qst(it))
@@ -362,23 +462,47 @@ def fix_creation_rate():
     shop_lst = lib_lst.lst(os.path.join(pvf_dir, "itemshop\\itemshop.lst"))
     shops: dict[int, lib_shop.shop] = {}
     for shop_id, path in shop_lst.get_item_dict().items():
-        shops[int(shop_id)] = lib_shop.shop(lib_item.item(
-            pvf_dir, lib_pvf.SHP, os.path.join(pvf_dir, lib_pvf.SHP, path), False))
+        shops[int(shop_id)] = lib_shop.shop(
+            lib_item.item(
+                pvf_dir, lib_pvf.SHP, os.path.join(
+                    pvf_dir, lib_pvf.SHP, path), False
+            )
+        )
 
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_dir, "equipment\\character"), lib_item.EXT_EQU, pvf_dir, lib_pvf.EQU, filter_dir=["avatar"])
+        os.path.join(pvf_dir, "equipment\\character"),
+        lib_item.EXT_EQU,
+        pvf_dir,
+        lib_pvf.EQU,
+        filter_dir=["avatar"],
+    )
     for it in d.values():
-        if not it.has_tag('equipment type') or it.has_tag('equipment type') and ('avatar' in it.get_single_tag('equipment type').get_value() or 'title' in it.get_single_tag('equipment type').get_value()) or it.has_tag('avatar type select') or it.has_tag('avatar select ability') or not it.has_tag('rarity') or not it.has_tag('name') or not it.has_tag('minimum level'):
+        if (
+            not it.has_tag("equipment type")
+            or it.has_tag("equipment type")
+            and (
+                "avatar" in it.get_single_tag("equipment type").get_value()
+                or "title" in it.get_single_tag("equipment type").get_value()
+            )
+            or it.has_tag("avatar type select")
+            or it.has_tag("avatar select ability")
+            or not it.has_tag("rarity")
+            or not it.has_tag("name")
+            or not it.has_tag("minimum level")
+        ):
             continue
 
         if util.equ_is_title(it):
             continue
 
-        name = it.get_single_tag_value('name')
-        if '释魂之真灵' in name or is_not_need_creation_rate(name):
+        name = it.get_single_tag_value("name")
+        if "释魂之真灵" in name or is_not_need_creation_rate(name):
             continue
 
-        if it.has_tag('creation rate') and it.get_single_tag('creation rate').get_value() != '0':
+        if (
+            it.has_tag("creation rate")
+            and it.get_single_tag("creation rate").get_value() != "0"
+        ):
             continue
 
         if not equ_lst.has_path(it.get_internal_path()):
@@ -404,35 +528,43 @@ def fix_creation_rate():
         if found_in_qst:
             continue
 
-        if it.get_single_tag('rarity').get_value() == "3":
-            print(item_id, it.get_single_tag_value('name'),
-                  it.get_single_tag_value('rarity'))
+        if it.get_single_tag("rarity").get_value() == "3":
+            print(
+                item_id,
+                it.get_single_tag_value("name"),
+                it.get_single_tag_value("rarity"),
+            )
 
 
 def remove_duplicate_equ():
     pvf_dir = "D:\\workspace\\code\\other\\pvf_1031"
     equ_lst = lib_lst.lst(os.path.join(pvf_dir, "equipment\\equipment.lst"))
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_dir, "equipment\\character"), lib_item.EXT_EQU, pvf_dir, lib_pvf.EQU)
+        os.path.join(pvf_dir, "equipment\\character"),
+        lib_item.EXT_EQU,
+        pvf_dir,
+        lib_pvf.EQU,
+    )
     equ_name_dict: dict[str, tuple[int, str]] = {}
     for it in d.values():
-        if not it.has_tag('name'):
+        if not it.has_tag("name"):
             continue
-        if it.get_single_tag('name').get_value() == '``':
+        if it.get_single_tag("name").get_value() == "``":
             continue
         if util.equ_is_avatar(it):
             continue
         internal_path = it.get_internal_path()
         if not equ_lst.has_path(internal_path):
             continue
-        if it.has_tag('rarity') and it.get_single_tag('rarity').get_value() != "5":
+        if it.has_tag("rarity") and it.get_single_tag("rarity").get_value() != "5":
             continue
-        name = it.get_single_tag('name').get_value().strip("`")
+        name = it.get_single_tag("name").get_value().strip("`")
         id = int(equ_lst.get_id_by_path(it.get_internal_path()))
 
         if name in equ_name_dict:
-            print(name, equ_name_dict[name][0],
-                  equ_name_dict[name][1], id, internal_path)
+            print(
+                name, equ_name_dict[name][0], equ_name_dict[name][1], id, internal_path
+            )
             continue
         equ_name_dict[name] = (id, internal_path)
 
@@ -445,11 +577,17 @@ def print_creation_rate():
     pvf_dir = "D:\\workspace\\code\\other\\pvf_1031"
 
     equ_lst = lib_lst.lst(os.path.join(pvf_dir, "equipment\\equipment.lst"))
-    indep_drop = lib_indep_drop.indep_drop(os.path.join(
-        pvf_dir, "etc\\independent_drop.etc"), pvf_dir)
+    indep_drop = lib_indep_drop.indep_drop(
+        os.path.join(pvf_dir, "etc\\independent_drop.etc"), pvf_dir
+    )
 
-    d = lib_pvf.pvf.read_dir(os.path.join(
-        pvf_dir, "n_quest"), lib_item.EXT_QUEST, pvf_dir, lib_pvf.QUEST, False)
+    d = lib_pvf.pvf.read_dir(
+        os.path.join(pvf_dir, "n_quest"),
+        lib_item.EXT_QUEST,
+        pvf_dir,
+        lib_pvf.QUEST,
+        False,
+    )
     qst_items: dict[int, int] = {}
     for it in d.values():
         qst = lib.qst.qst(it)
@@ -459,11 +597,20 @@ def print_creation_rate():
     shop_lst = lib_lst.lst(os.path.join(pvf_dir, "itemshop\\itemshop.lst"))
     shops: dict[int, lib_shop.shop] = {}
     for shop_id, path in shop_lst.get_item_dict().items():
-        shops[int(shop_id)] = lib_shop.shop(lib_item.item(
-            pvf_dir, lib_pvf.SHP, os.path.join(pvf_dir, lib_pvf.SHP, path), False))
+        shops[int(shop_id)] = lib_shop.shop(
+            lib_item.item(
+                pvf_dir, lib_pvf.SHP, os.path.join(
+                    pvf_dir, lib_pvf.SHP, path), False
+            )
+        )
 
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_dir, "equipment\\character"), lib_item.EXT_EQU, pvf_dir, lib_pvf.EQU, filter_dir=["avatar"])
+        os.path.join(pvf_dir, "equipment\\character"),
+        lib_item.EXT_EQU,
+        pvf_dir,
+        lib_pvf.EQU,
+        filter_dir=["avatar"],
+    )
     for rarity in ["1", "2", "3", "4", "5"]:
         for lvl in range(0, 90, 10):
             min_lvl = lvl
@@ -473,16 +620,23 @@ def print_creation_rate():
             for it in d.values():
                 if util.equ_is_avatar(it) or util.equ_is_title(it):
                     continue
-                if not it.has_tag('rarity') or not it.has_tag('minimum level') or not it.has_tag('name'):
+                if (
+                    not it.has_tag("rarity")
+                    or not it.has_tag("minimum level")
+                    or not it.has_tag("name")
+                ):
                     continue
 
-                if not it.has_tag('creation rate'):
+                if not it.has_tag("creation rate"):
                     continue
 
-                if int(it.get_single_tag_value('minimum level')) <= min_lvl and int(it.get_single_tag_value('minimum level')) > max_lvl:
+                if (
+                    int(it.get_single_tag_value("minimum level")) <= min_lvl
+                    and int(it.get_single_tag_value("minimum level")) > max_lvl
+                ):
                     continue
 
-                name = it.get_single_tag_value('name')
+                name = it.get_single_tag_value("name")
                 if is_not_need_creation_rate(name):
                     continue
 
@@ -504,13 +658,31 @@ def print_creation_rate():
                 if found_in_shop:
                     continue
 
-                if it.get_single_tag_value('rarity') == rarity and int(it.get_single_tag_value('minimum level')) > min_lvl and int(it.get_single_tag_value('minimum level')) <= max_lvl:
-                    out += it.get_single_tag_value_or_default('creation rate', "-1") + "\t" + it.get_single_tag_value(
-                        'name') + "\t" + it.get_internal_path() + "\n"
-            fn = "print_creation_rate_" + rarity + "_" + \
-                str(min_lvl) + "_" + str(max_lvl) + ".txt"
+                if (
+                    it.get_single_tag_value("rarity") == rarity
+                    and int(it.get_single_tag_value("minimum level")) > min_lvl
+                    and int(it.get_single_tag_value("minimum level")) <= max_lvl
+                ):
+                    out += (
+                        it.get_single_tag_value_or_default(
+                            "creation rate", "-1")
+                        + "\t"
+                        + it.get_single_tag_value("name")
+                        + "\t"
+                        + it.get_internal_path()
+                        + "\n"
+                    )
+            fn = (
+                "print_creation_rate_"
+                + rarity
+                + "_"
+                + str(min_lvl)
+                + "_"
+                + str(max_lvl)
+                + ".txt"
+            )
             print(fn)
-            with open(fn, mode='w', encoding='utf-8') as f:
+            with open(fn, mode="w", encoding="utf-8") as f:
                 f.write(out)
 
 
@@ -519,41 +691,48 @@ def change_creation_rate_batch():
     equ_lst = lib_lst.lst(os.path.join(pvf_dir, "equipment\\equipment.lst"))
 
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_dir, "equipment\\character"), lib_item.EXT_EQU, pvf_dir, lib_pvf.EQU, filter_dir=["avatar"])
+        os.path.join(pvf_dir, "equipment\\character"),
+        lib_item.EXT_EQU,
+        pvf_dir,
+        lib_pvf.EQU,
+        filter_dir=["avatar"],
+    )
     for it in d.values():
-        if not it.has_tag('name'):
+        if not it.has_tag("name"):
             continue
 
         internal_path = it.get_internal_path()
         if not equ_lst.has_path(internal_path):
             continue
 
-        name = it.get_single_tag('name').get_value().strip("`")
+        name = it.get_single_tag("name").get_value().strip("`")
         # if "羽之痕项" in name or "羽之痕戒" in name or "羽之痕手镯" in name or "光之恩赐黄金" in name or "太阳神之庇佑黄金" in name or "精灵之祝福黄金" in name:
         #     for t in it.get_tag('creation rate'):
         #         t.set_value("150")
         #     it.overwrite()
         #     print(name)
-        if internal_path in [
-
-
-        ]:
+        if internal_path in []:
             # if not it.has_tag('attach type') or it.has_tag('attach type') and "sealing" not in it.get_single_tag_value("attach type"):
             #     continue
 
-            if name.startswith("高科技") or name.startswith("84_") or name.startswith("85_"):
+            if (
+                name.startswith("高科技")
+                or name.startswith("84_")
+                or name.startswith("85_")
+            ):
                 continue
 
             cr = "200"
             if util.equ_is_weapon(it):
                 cr = "200"
-            if not it.has_tag('creation rate'):
-                it.add_tag(lib_tag.tag('creation rate', cr))
+            if not it.has_tag("creation rate"):
+                it.add_tag(lib_tag.tag("creation rate", cr))
             else:
-                for t in it.get_tag('creation rate'):
+                for t in it.get_tag("creation rate"):
                     t.set_value(cr)
             it.overwrite()
             print(name)
+
 
 # change_creation_rate_batch()
 
@@ -643,55 +822,72 @@ def change_creation_rate_batch():
 #                     old_it.get_single_tag_value(tag))
 #         it.overwrite()
 
-# 独立掉落添加到选图界面
-# 英雄级ai
-# 袖珍罐
 
 def check_skl_column():
     skl_exp_pvf_path = "C:\\Users\\donkeywon\\Desktop\\86"
     # skl_exp_pvf_path = "C:\\Users\\donkeywon\\Desktop\\全职业动静态技能数据"
     pvf_path = "D:\\workspace\\code\\other\\pvf_1031"
 
-    d = lib_pvf.pvf.read_dir(os.path.join(
-        pvf_path, lib_pvf.SKL), lib_item.EXT_SKL, pvf_path, lib_pvf.SKL, False)
+    d = lib_pvf.pvf.read_dir(
+        os.path.join(pvf_path, lib_pvf.SKL),
+        lib_item.EXT_SKL,
+        pvf_path,
+        lib_pvf.SKL,
+        False,
+    )
 
     for it in d.values():
-        if not it.has_tag('level info') and not it.has_tag('dungeon'):
+        if not it.has_tag("level info") and not it.has_tag("dungeon"):
             continue
 
         path = os.path.join(skl_exp_pvf_path, lib_pvf.SKL,
                             it.get_internal_path())
         if not os.path.exists(path):
             continue
-        skl_exp_it = lib_item.item(skl_exp_pvf_path, lib_pvf.SKL, os.path.join(
-            skl_exp_pvf_path, lib_pvf.SKL, it.get_internal_path()), False)
-        if not skl_exp_it.has_tag('level info') and not skl_exp_it.has_tag('dungeon'):
+        skl_exp_it = lib_item.item(
+            skl_exp_pvf_path,
+            lib_pvf.SKL,
+            os.path.join(skl_exp_pvf_path, lib_pvf.SKL,
+                         it.get_internal_path()),
+            False,
+        )
+        if not skl_exp_it.has_tag("level info") and not skl_exp_it.has_tag("dungeon"):
             continue
 
         it_column = ""
-        if it.has_tag('level info'):
-            lvl_info = it.get_single_tag_value('level info')
+        if it.has_tag("level info"):
+            lvl_info = it.get_single_tag_value("level info")
             it_column = lvl_info.split("\n")[0].strip()
-        elif it.has_tag('dungeon') and it.get_single_tag('dungeon').has_sub_tag_name('level info'):
-            lvl_info = it.get_single_tag(
-                'dungeon').get_single_sub_tag('level info').get_value()
+        elif it.has_tag("dungeon") and it.get_single_tag("dungeon").has_sub_tag_name(
+            "level info"
+        ):
+            lvl_info = (
+                it.get_single_tag("dungeon")
+                .get_single_sub_tag("level info")
+                .get_value()
+            )
             it_column = lvl_info.split("\n")[0].strip()
         else:
             continue
 
         skl_exp_it_column = ""
-        if skl_exp_it.has_tag('level info'):
-            lvl_info = skl_exp_it.get_single_tag_value('level info')
+        if skl_exp_it.has_tag("level info"):
+            lvl_info = skl_exp_it.get_single_tag_value("level info")
             skl_exp_it_column = lvl_info.split("\n")[0].strip()
-        elif skl_exp_it.has_tag('dungeon') and skl_exp_it.get_single_tag('dungeon').has_sub_tag_name('level info'):
-            lvl_info = skl_exp_it.get_single_tag(
-                'dungeon').get_single_sub_tag('level info').get_value()
+        elif skl_exp_it.has_tag("dungeon") and skl_exp_it.get_single_tag(
+            "dungeon"
+        ).has_sub_tag_name("level info"):
+            lvl_info = (
+                skl_exp_it.get_single_tag("dungeon")
+                .get_single_sub_tag("level info")
+                .get_value()
+            )
             skl_exp_it_column = lvl_info.split("\n")[0].strip()
         else:
             continue
 
         if it_column != skl_exp_it_column:
-            print(it.get_internal_path(), it.get_single_tag_value('name'))
+            print(it.get_internal_path(), it.get_single_tag_value("name"))
         # if not it.has_tag('level property'):
         #     continue
         # path = os.path.join(skl_exp_pvf_path, lib_pvf.SKL, it.get_internal_path())
@@ -704,6 +900,7 @@ def check_skl_column():
         # lvl_prop = skl_exp_it.get_single_tag_value('level property')
         # it.get_single_tag('level property').set_value(lvl_prop)
         # it.overwrite()
+
 
 # sample_ids = ["63500", "64000", "64500"]
 
@@ -878,6 +1075,7 @@ def check_skl_column():
 #     "C:\\Users\\donkeywon\\Desktop\\86\\appendage\\appendage.lst")
 # es_path = "C:\\Users\\donkeywon\\Desktop\\86"
 
+
 def gen_mini_pod():
     pvf_path = "D:\\workspace\\code\\other\\pvf_1031"
 
@@ -896,21 +1094,29 @@ def gen_mini_pod():
     raritys = [0, 1, 2, 3]
 
     d = lib_pvf.pvf.read_dir(
-        os.path.join(pvf_path, "equipment\\character"), lib_item.EXT_EQU, pvf_path, lib_pvf.EQU)
+        os.path.join(pvf_path, "equipment\\character"),
+        lib_item.EXT_EQU,
+        pvf_path,
+        lib_pvf.EQU,
+    )
     for it in d.values():
         if util.equ_is_avatar(it) or util.equ_is_title(it):
             continue
-        if not it.has_tag('rarity') or not it.has_tag('name') or not it.has_tag('minimum level'):
+        if (
+            not it.has_tag("rarity")
+            or not it.has_tag("name")
+            or not it.has_tag("minimum level")
+        ):
             continue
 
-        lvl = int(it.get_single_tag_value('minimum level'))
+        lvl = int(it.get_single_tag_value("minimum level"))
         lvl_range_left = lvl - lvl % 10 + 1
 
-        name = it.get_single_tag_value('name')
-        if util.equ_need_filter(name):
+        name = it.get_single_tag_value("name")
+        if util.equ_name_need_filter(name):
             continue
 
-        rarity = int(it.get_single_tag_value('rarity'))
+        rarity = int(it.get_single_tag_value("rarity"))
         if rarity not in raritys:
             continue
 
@@ -922,54 +1128,36 @@ def gen_mini_pod():
         if util.equ_is_weapon(it):
             job = i_path.split("/")[1]
             if not job in weapon_jobs_data:
-                weapon_jobs_data[job] = {
-                    lvl_range_left: {
-                        rarity: []
-                    }
-                }
+                weapon_jobs_data[job] = {lvl_range_left: {rarity: []}}
             if lvl_range_left not in weapon_jobs_data[job]:
-                weapon_jobs_data[job][lvl_range_left] = {
-                    rarity: []
-                }
+                weapon_jobs_data[job][lvl_range_left] = {rarity: []}
             if rarity not in weapon_jobs_data[job][lvl_range_left]:
                 weapon_jobs_data[job][lvl_range_left][rarity] = []
             weapon_jobs_data[job][lvl_range_left][rarity].append(id)
         elif util.equ_is_cloth(it):
             typ = i_path.split("/")[3]
             if not typ in cloth_data:
-                cloth_data[typ] = {
-                    lvl_range_left: {
-                        rarity: []
-                    }
-                }
+                cloth_data[typ] = {lvl_range_left: {rarity: []}}
             if lvl_range_left not in cloth_data[typ]:
-                cloth_data[typ][lvl_range_left] = {
-                    rarity: []
-                }
+                cloth_data[typ][lvl_range_left] = {rarity: []}
             if rarity not in cloth_data[typ][lvl_range_left]:
                 cloth_data[typ][lvl_range_left][rarity] = []
             cloth_data[typ][lvl_range_left][rarity].append(id)
         elif util.equ_is_jewelry(it):
             if lvl_range_left not in jew_data:
-                jew_data[lvl_range_left] = {
-                    rarity: []
-                }
+                jew_data[lvl_range_left] = {rarity: []}
             if rarity not in jew_data[lvl_range_left]:
                 jew_data[lvl_range_left][rarity] = []
             jew_data[lvl_range_left][rarity].append(id)
         elif util.equ_is_support(it):
             if lvl_range_left not in support_data:
-                support_data[lvl_range_left] = {
-                    rarity: []
-                }
+                support_data[lvl_range_left] = {rarity: []}
             if rarity not in support_data[lvl_range_left]:
                 support_data[lvl_range_left][rarity] = []
             support_data[lvl_range_left][rarity].append(id)
         elif util.equ_is_magicstone(it):
             if lvl_range_left not in magicstone_data:
-                magicstone_data[lvl_range_left] = {
-                    rarity: []
-                }
+                magicstone_data[lvl_range_left] = {rarity: []}
             if rarity not in magicstone_data[lvl_range_left]:
                 magicstone_data[lvl_range_left][rarity] = []
             magicstone_data[lvl_range_left][rarity].append(id)
@@ -993,9 +1181,11 @@ def gen_mini_pod():
             write_mini_pod_data("magicstone_", lvl, data, lvl_depth)
 
 
-def write_mini_pod_data(fn_prefix: str, lvl: int, rarity_data: dict[int, list[str]], lvl_depth: int):
+def write_mini_pod_data(
+    fn_prefix: str, lvl: int, rarity_data: dict[int, list[str]], lvl_depth: int
+):
     rarity_prob = gen_mini_pod_rarity_prob(rarity_data, lvl_depth)
-    f = open(fn_prefix + str(lvl) + ".txt", mode='w', encoding='utf-8')
+    f = open(fn_prefix + str(lvl) + ".txt", mode="w", encoding="utf-8")
     for rarity, ids in rarity_data.items():
         prob = rarity_prob[rarity]
         for id in ids:
@@ -1003,7 +1193,9 @@ def write_mini_pod_data(fn_prefix: str, lvl: int, rarity_data: dict[int, list[st
     f.close()
 
 
-def gen_mini_pod_rarity_prob(rarity_dict: dict[int, list[str]], lvl_depth: int) -> dict[int, int]:
+def gen_mini_pod_rarity_prob(
+    rarity_dict: dict[int, list[str]], lvl_depth: int
+) -> dict[int, int]:
     raritys = list(rarity_dict.keys())
     raritys.sort(reverse=True)
     # 例如raritys是3 2 1 0
@@ -1033,30 +1225,216 @@ def gen_mini_pod_rarity_prob(rarity_dict: dict[int, list[str]], lvl_depth: int) 
     return res
 
 
+def fix_lst_upper_lower(origin_path: str, dst_path: str):
+    origin_lst = lib_lst.lst(origin_path)
+    dst_lst = lib_lst.lst(dst_path)
+    for id, path in origin_lst.get_item_dict().items():
+        if dst_lst.has_path(path.lower()):
+            dst_id = dst_lst.get_id_by_path(path.lower())
+            if dst_lst.get_item_dict()[dst_id] != path:
+                print(dst_id, path)
+                dst_lst.get_item_dict()[dst_id] = path
+    dst_lst.overwrite()
+
+
+shop_new_line = "-1	-1	-1	-1	-1	-1	-1\n"
+shop_new_tab = "-2\n"
+
+
+def gen_rarity_shop(gen_rarity: str):
+    pvf_path = "D:\\workspace\\code\\other\\pvf_1031"
+    equ_lst = lib_lst.lst(pvf_path + "\\equipment\\equipment.lst")
+    d = lib_pvf.pvf.read_dir(
+        pvf_path + "\\equipment\\character",
+        lib_item.EXT_EQU,
+        pvf_path,
+        lib_pvf.EQU,
+    )
+
+    weapon_map: dict[str, dict[str, dict[str, int]]] = {}
+    cloth_map: dict[str, dict[str, dict[str, int]]] = {}
+    support_map: dict[str, int] = {}
+    magicstone_map: dict[str, int] = {}
+    jew_map: dict[str, dict[str, int]] = {}
+
+    for it in d.values():
+        if (
+            not util.equ_is_cloth(it)
+            and not util.equ_is_weapon(it)
+            and not util.equ_is_zuoyou(it)
+            and not util.equ_is_jewelry(it)
+        ):
+            continue
+
+        if (
+            not it.has_tag("rarity")
+            or not it.has_tag("name")
+            or not it.has_tag("minimum level")
+        ):
+            continue
+
+        if util.equ_need_filter(it):
+            continue
+
+        rarity = it.get_single_tag_value("rarity")
+        if rarity != gen_rarity:
+            continue
+
+        if it.has_tag("item category") and "`boss drop`" in it.get_single_tag_value(
+            "item category"
+        ):
+            continue
+
+        lvl = int(it.get_single_tag_value("minimum level"))
+
+        i_path = it.get_internal_path()
+        if not equ_lst.has_path(i_path):
+            continue
+
+        id = equ_lst.get_id_by_path(i_path)
+        i_path_s = i_path.split("/")
+
+        if util.equ_is_cloth(it):
+            armor_type = i_path_s[-2]
+            cloth_type = i_path_s[-3]
+            if armor_type not in cloth_map:
+                cloth_map[armor_type] = {}
+            if cloth_type not in cloth_map[armor_type]:
+                cloth_map[armor_type][cloth_type] = {}
+            cloth_map[armor_type][cloth_type][id] = lvl
+        elif util.equ_is_weapon(it):
+            weapon_type = i_path_s[-2]
+            character_type = i_path_s[-4]
+            if character_type not in weapon_map:
+                weapon_map[character_type] = {}
+            if weapon_type not in weapon_map[character_type]:
+                weapon_map[character_type][weapon_type] = {}
+            weapon_map[character_type][weapon_type][id] = lvl
+        elif util.equ_is_support(it):
+            support_map[id] = lvl
+        elif util.equ_is_magicstone(it):
+            magicstone_map[id] = lvl
+        elif util.equ_is_jewelry(it):
+            jew_type = i_path_s[-2]
+            if jew_type not in jew_map:
+                jew_map[jew_type] = {}
+            jew_map[jew_type][id] = lvl
+
+    with open("shop.txt", mode="w", encoding="utf-8") as f:
+        # 武器
+        for character_type in weapon_map.keys():
+            for weapon_type in weapon_map[character_type].keys():
+                f.write(
+                    id_with_lvl_dict_to_shop_content(
+                        weapon_map[character_type][weapon_type]
+                    )
+                )
+                f.write(shop_new_line)
+            f.write(shop_new_line)
+            f.write(shop_new_line)
+        f.write(shop_new_tab)
+
+        # 布 皮 轻 重 板
+        for armor_type in cloth_map.keys():
+            for cloth_type in cloth_map[armor_type].keys():
+                f.write(
+                    id_with_lvl_dict_to_shop_content(
+                        cloth_map[armor_type][cloth_type])
+                )
+                f.write(shop_new_line)
+            f.write(shop_new_tab)
+
+        # 左右槽
+        f.write(id_with_lvl_dict_to_shop_content(support_map))
+        f.write(shop_new_line)
+        f.write(id_with_lvl_dict_to_shop_content(magicstone_map))
+        f.write(shop_new_tab)
+
+        # 首饰
+        for jew_type in jew_map.keys():
+            f.write(id_with_lvl_dict_to_shop_content(jew_map[jew_type]))
+            f.write(shop_new_line)
+
+
+def id_with_lvl_dict_to_shop_content(d: dict[str, int]) -> str:
+    content = ""
+    s = sorted(d.items(), key=lambda x: x[1])
+    l: list[str] = []
+    for t in s:
+        l.append(t[0])
+    for ll in list_to_group(l):
+        content += "\t".join(ll)
+        content += "\n"
+    return content
+
+
+def list_to_group(l: list) -> list[list]:
+    per_group = 7
+
+    def f(a): return map(
+        lambda b: a[b: b + per_group], range(0, len(a), per_group))
+    ll: list[list] = list(f(l))
+    if len(ll[-1]) < per_group:
+        for i in range(0, per_group - len(ll[-1])):
+            ll[-1].append("-1")
+    return ll
+
+
+# sort_lst("C:\\Users\\donkeywon\\Desktop\\1031\\passiveobject\\passiveobject.lst")
+
+
 d = lib_pvf.pvf.read_dir(
-    "C:\\Users\\donkeywon\\Desktop\\tmp", lib_item.EXT_STK)
+    "D:\\workspace\\code\\other\\pvf_1031\\monster", lib_item.EXT_MONSTER
+)
 for it in d.values():
-    if not it.has_tag('explain'):
+    if not it.has_tag("ai pattern"):
         continue
-    price = it.get_single_tag('price')
-    explain = it.get_single_tag_value('explain')
-    if "Lv1~" in explain:
-        price.set_value('100000')
-    elif "Lv11~" in explain:
-        price.set_value('200000')
-    elif "Lv25~" in explain or "Lv20~" in explain:
-        price.set_value('300000')
-    elif "Lv35~" in explain or "Lv30~" in explain:
-        price.set_value('400000')
-    elif "Lv45~" in explain or "Lv40~" in explain:
-        price.set_value('500000')
-    elif "Lv55~" in explain or "Lv50~" in explain:
-        price.set_value('600000')
-    elif "Lv60~" in explain:
-        price.set_value('700000')
-    elif "70 ~" in explain or "70级" in explain:
-        price.set_value('800000')
-    it.overwrite()
+
+    ai_pattern = it.get_single_tag("ai pattern")
+    medium = ai_pattern.get_sub_tag("medium")
+    if len(medium) == 0:
+        continue
+    medium_value = medium[0].get_value()
+
+    ultimate = ai_pattern.get_sub_tag("ultimate")
+    if len(ultimate) == 0:
+        continue
+    ultimate_value = ultimate[0].get_value()
+
+    hero_value = ""
+    hero = ai_pattern.get_sub_tag("hero")
+    if len(hero) != 0:
+        hero_value = hero[0].get_value()
+
+    if ultimate_value != hero_value and hero_value != "":
+        ultimate[0].set_value(hero_value)
+        it.overwrite()
+
+
+# d = lib_pvf.pvf.read_dir(
+#     "C:\\Users\\donkeywon\\Desktop\\tmp", lib_item.EXT_STK)
+# for it in d.values():
+#     if not it.has_tag('explain'):
+#         continue
+#     price = it.get_single_tag('price')
+#     explain = it.get_single_tag_value('explain')
+#     if "Lv1~" in explain:
+#         price.set_value('100000')
+#     elif "Lv11~" in explain:
+#         price.set_value('200000')
+#     elif "Lv25~" in explain or "Lv20~" in explain:
+#         price.set_value('300000')
+#     elif "Lv35~" in explain or "Lv30~" in explain:
+#         price.set_value('400000')
+#     elif "Lv45~" in explain or "Lv40~" in explain:
+#         price.set_value('500000')
+#     elif "Lv55~" in explain or "Lv50~" in explain:
+#         price.set_value('600000')
+#     elif "Lv60~" in explain:
+#         price.set_value('700000')
+#     elif "70 ~" in explain or "70级" in explain:
+#         price.set_value('800000')
+#     it.overwrite()
 
 # for t in it.get_tag_arr():
 #     sub_tags_recurse = t.get_sub_tag_recurse('appendage')

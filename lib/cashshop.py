@@ -11,20 +11,20 @@ class cashshop:
         self._it = it
         self._avatar = {}
         self._package = {}
-        if it.has_tag('avatar'):
-            avatar = it.get_single_tag('avatar')
-            avatar_list = avatar.get_value().split('\n')
+        if it.has_tag("avatar"):
+            avatar = it.get_single_tag("avatar")
+            avatar_list = avatar.get_value().split("\n")
             for a in avatar_list:
-                a_splitted = a.strip().split('\t')
+                a_splitted = a.strip().split("\t")
                 id = a_splitted[1]
                 if id in self._avatar:
                     raise Exception("重复的avatar id: %s", id)
                 self._avatar[id] = a_splitted
-        if it.has_tag('package'):
-            package = it.get_single_tag('package')
-            package_list = package.get_value().split('\n')
+        if it.has_tag("package"):
+            package = it.get_single_tag("package")
+            package_list = package.get_value().split("\n")
             for p in package_list:
-                p_splitted = p.strip().split('\t')
+                p_splitted = p.strip().split("\t")
                 id = p_splitted[1]
                 if id in self._package:
                     raise Exception("重复的package id: %s", id)
